@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Configuración básica -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Información del documento -->
+    <meta name="description" content="Modelo de Informe .html">
+
+    <!-- Título -->
+    <title>Modelo de Informe .html</title>
+
+    <!-- Fuente tipográfica (Google Fonts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Recursos -->
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/botones.css">
+    <link rel="stylesheet" href="styles/KPI.css">
+    <link rel="stylesheet" href="styles/Insights.css">
+    <link rel="stylesheet" href="styles/Carousel.css">
+    <link rel="stylesheet" href="styles/grafico_de_lineas.css">
+
+</head>
+
+<body>
+
+ <!-- HEADER -->
+
+<header class="main-header">
+    <div class="contenedor-logo-texto">
+        <div class="contenedor-logo">
+            <img src="img/Primor letras.png" alt="Logo Primor" class="logo-primor">
+        </div>
+        <div class="contenedor-texto">
+            <h1>Resultados en AASS</h1>
+        </div>
+    </div>
+    
+
+    <!-- FILTROS -->
+
+    <div class="contenedor-botones-filtros">
+
+        <div class="dropdown-wrapper">
+            <button class="dropdown-btn">
+                <div class="text-container">
+                    <span class="label">Tipo de control</span>
+                    <span class="value">Todos</span>
+                </div>
+                <div class="icon">
+                    <!-- Usamos un SVG en lugar de una letra "v" para que se vea más profesional -->
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 2L6 6L10 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </button>
+            <!-- Lista de opciones -->
+            <ul class="dropdown-menu">
+                <li class="dropdown-item">Todos</li>
+                <li class="dropdown-item">Manual</li>
+                <li class="dropdown-item">Automático</li>
+                <li class="dropdown-item">Preventivo</li>
+                <li class="dropdown-item">Correctivo</li>
+            </ul>
+        </div>
+
+        <div class="dropdown-wrapper">
+            <button class="dropdown-btn">
+                <div class="text-container">
+                    <span class="label">SKU</span>
+                    <span class="value">Todos</span>
+                </div>
+                <div class="icon">
+                    <!-- Usamos un SVG en lugar de una letra "v" para que se vea más profesional -->
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 2L6 6L10 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </button>
+            <!-- Lista de opciones -->
+            <ul class="dropdown-menu">
+                <li class="dropdown-item">Todos</li>
+                <li class="dropdown-item">Manual</li>
+                <li class="dropdown-item">Automático</li>
+                <li class="dropdown-item">Preventivo</li>
+                <li class="dropdown-item">Correctivo</li>
+            </ul>
+        </div>
+
+        <div class="dropdown-wrapper">
+            <button class="dropdown-btn">
+                <div class="text-container">
+                    <span class="label">Ciudad</span>
+                    <span class="value">Todos</span>
+                </div>
+                <div class="icon">
+                    <!-- Usamos un SVG en lugar de una letra "v" para que se vea más profesional -->
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 2L6 6L10 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </button>
+            <!-- Lista de opciones -->
+            <ul class="dropdown-menu">
+                <li class="dropdown-item">Todos</li>
+                <li class="dropdown-item">Manual</li>
+                <li class="dropdown-item">Automático</li>
+                <li class="dropdown-item">Preventivo</li>
+                <li class="dropdown-item">Correctivo</li>
+            </ul>
+        </div>
+
+        <div class="dropdown-wrapper">
+            <button class="dropdown-btn">
+                <div class="text-container">
+                    <span class="label">12 - 18 May 2026</span>
+                    <span class="value">Todos</span>
+                </div>
+                <div class="icon">
+                    <!-- Usamos un SVG en lugar de una letra "v" para que se vea más profesional -->
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 2L6 6L10 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </button>
+            <!-- Lista de opciones -->
+            <ul class="dropdown-menu">
+                <li class="dropdown-item">Todos</li>
+                <li class="dropdown-item">Manual</li>
+                <li class="dropdown-item">Automático</li>
+                <li class="dropdown-item">Preventivo</li>
+                <li class="dropdown-item">Correctivo</li>
+            </ul>
+        </div>
+
+    </div>
+</header>
+
+<!-- FECHA DE ACTUALIZACIÓN -->
+
+<!--
+<section class="texto-derecha">
+    <p>Última actualización: DD/MM/YYYY HH:MM</p>
+</section>
+-->
+
+<section class="kpis-container">
+ 
+    <!-- KPI 1: SELL OUT -->
+    <article class="kpi-card" data-compliance="89">
+        <div class="kpi-card-inner">
+            <!-- Cara frontal -->
+            <div class="kpi-card-face kpi-card-front">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                        <polyline points="16 7 22 7 22 13"></polyline>
+                    </svg>
+                </div>
+                <div class="kpi-header">
+                    <h3>SELL OUT (SO)</h3>
+                </div>
+                <div class="kpi-value">89%</div>
+                <div class="kpi-meta">Cumplimiento</div>
+                <div class="kpi-progress">
+                    <div class="kpi-progress-bar"></div>
+                </div>
+                <div class="kpi-footer">
+                    <div class="kpi-compliance">
+                        <strong>120 TM</strong>
+                        <span>Meta: 135 TM</span>
+                    </div>
+                    <div class="kpi-variation kpi-variation--up">
+                        <span class="kpi-variation-arrow">▲</span> +4 TM
+                    </div>
+                </div>
+            </div>
+            <!-- Cara trasera (definición) -->
+            <div class="kpi-card-face kpi-card-back">
+                <h3>SELL OUT (SO)</h3>
+                <p>Volumen total de producto vendido al consumidor final durante la semana, medido en toneladas métricas (TM). Refleja la demanda real en punto de venta.</p>
+            </div>
+        </div>
+    </article>
+ 
+    <!-- KPI 2: BRECHA -->
+    <article class="kpi-card" data-compliance="48">
+        <div class="kpi-card-inner">
+            <div class="kpi-card-face kpi-card-front">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="8" x2="18" y2="16"></line>
+                        <line x1="6" y1="8" x2="6" y2="16"></line>
+                        <line x1="18" y1="12" x2="22" y2="12"></line>
+                        <line x1="2" y1="12" x2="6" y2="12"></line>
+                        <line x1="9" y1="12" x2="15" y2="12" stroke-dasharray="2 2"></line>
+                    </svg>
+                </div>
+                <div class="kpi-header">
+                    <h3>BRECHA</h3>
+                </div>
+                <div class="kpi-value">48%</div>
+                <div class="kpi-meta">Cumplimiento</div>
+                <div class="kpi-progress">
+                    <div class="kpi-progress-bar"></div>
+                </div>
+                <div class="kpi-footer">
+                    <div class="kpi-compliance">
+                        <strong>21 pp</strong>
+                        <span>Meta: 60 pp</span>
+                    </div>
+                    <div class="kpi-variation kpi-variation--down">
+                        <span class="kpi-variation-arrow">▼</span> -12 pp
+                    </div>
+                </div>
+            </div>
+            <div class="kpi-card-face kpi-card-back">
+                <h3>BRECHA</h3>
+                <p>Diferencia entre la cobertura o ejecución actual y la esperada. Un valor menor a la meta indica que aún existe una distancia importante por cerrar.</p>
+            </div>
+        </div>
+    </article>
+ 
+    <!-- KPI 3: EFICIENCIA DE INVERSIÓN -->
+    <article class="kpi-card" data-compliance="78">
+        <div class="kpi-card-inner">
+            <div class="kpi-card-face kpi-card-front">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <div class="kpi-header">
+                    <h3>EFICIENCIA DE INVERSIÓN</h3>
+                </div>
+                <div class="kpi-value">78% </div>
+                <div class="kpi-meta">Cumplimiento</div>
+                <div class="kpi-progress">
+                    <div class="kpi-progress-bar"></div>
+                </div>
+                <div class="kpi-footer">
+                    <div class="kpi-compliance">
+                        <strong>78 Soles/TM</strong>
+                        <span>Meta: 100 Soles/TM</span>
+                    </div>
+                    <div class="kpi-variation kpi-variation--up">
+                        <span class="kpi-variation-arrow">▲</span> +2%
+                    </div>
+                </div>
+            </div>
+            <div class="kpi-card-face kpi-card-back">
+                <h3>EFICIENCIA DE INVERSIÓN (EI)</h3>
+                <p>Soles invertidos por cada tonelada métrica vendida. Cuanto menor sea el valor frente a la meta, más eficiente fue la inversión realizada.</p>
+            </div>
+        </div>
+    </article>
+ 
+    <!-- KPI 4: PARTICIPACIÓN -->
+    <article class="kpi-card" data-compliance="100">
+        <div class="kpi-card-inner">
+            <div class="kpi-card-face kpi-card-front">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                        <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                    </svg>
+                </div>
+                <div class="kpi-header">
+                    <h3>PARTICIPACIÓN</h3>
+                </div>
+                <div class="kpi-value">100%</div>
+                <div class="kpi-meta">Cumplimiento</div>
+                <div class="kpi-progress">
+                    <div class="kpi-progress-bar"></div>
+                </div>
+                <div class="kpi-footer">
+                    <div class="kpi-compliance">
+                        <strong>12000</strong>
+                        <span>Meta: 12000</span>
+                    </div>
+                    <div class="kpi-variation kpi-variation--up">
+                        <span class="kpi-variation-arrow">▲</span> +1%
+                    </div>
+                </div>
+            </div>
+            <div class="kpi-card-face kpi-card-back">
+                <h3>PARTICIPACIÓN</h3>
+                <p>Número de puntos de venta activos que cuentan con presencia de nuestros productos, respecto al universo total planificado.</p>
+            </div>
+        </div>
+    </article>
+ 
+    <!-- KPI 5: NPS -->
+    <article class="kpi-card" data-compliance="103">
+        <div class="kpi-card-inner">
+            <div class="kpi-card-face kpi-card-front">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </div>
+                <div class="kpi-header">
+                    <h3>NPS</h3>
+                </div>
+                <div class="kpi-value">103%</div>
+                <div class="kpi-meta">Cumplimiento</div>
+                <div class="kpi-progress">
+                    <div class="kpi-progress-bar"></div>
+                </div>
+                <div class="kpi-footer">
+                    <div class="kpi-compliance">
+                        <strong>72</strong>
+                        <span>Meta ≥ 70</span>
+                    </div>
+                    <div class="kpi-variation kpi-variation--up">
+                        <span class="kpi-variation-arrow">▲</span> +2 pts
+                    </div>
+                </div>
+            </div>
+            <div class="kpi-card-face kpi-card-back">
+                <h3>NPS (Net Promoter Score)</h3>
+                <p>Mide la disposición de los clientes a recomendar la marca, en una escala de -100 a 100. Un valor por encima de la meta indica alta satisfacción.</p>
+            </div>
+        </div>
+    </article>
+ 
+    <!--
+      ═══════════════════════════════════════════════════════════════
+      PARA AGREGAR UNA NUEVA TARJETA EN EL FUTURO:
+      1. Copia un bloque <article class="kpi-card" data-compliance="X">...</article> completo
+      2. Cambia el número de data-compliance="X" por el % real de cumplimiento
+      3. Cambia el ícono SVG, el título, el valor, la meta y la variación
+      4. Escribe la definición del KPI en kpi-card-back
+      El CSS y el JS son genéricos: detectan la nueva tarjeta solas,
+      calculan el color (verde/naranja/rojo) y llenan la barra de progreso.
+      ═══════════════════════════════════════════════════════════════
+    -->
+ 
+</section>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main>
+
+    <!-- PANEL IZQUIERDO -->
+<section class="left-panel">
+
+    <!-- ============================================================
+    TOGGLE: Resultado / % Cumplimiento
+    ============================================================
+    Estos 2 botones cambian el MODO en que se dibujan las 5 tarjetas
+    de abajo (.tablero-grafico-linea):
+
+      - "Resultado"        -> gráfico de LÍNEAS con el valor real de
+                               cada semana (el que ya tenías).
+      - "% Cumplimiento"   -> gráfico de BARRAS con el % de cumplimiento
+                               de cada semana respecto a su meta, cada
+                               barra coloreada según ese % (verde/
+                               naranja/rojo) y con tooltip al pasar el
+                               mouse.
+
+    Toda la lógica de switcheo vive en grafico_de_lineas.js, en la
+    función inicializarToggleModoVisualizacion(). El CSS de estos
+    botones está en grafico_de_lineas.css, sección "TOGGLE MODO".
+
+    Para agregar un 3er modo en el futuro: agrega un 3er <button> aquí
+    con su propio data-modo="loQueSea", y en grafico_de_lineas.js
+    agrega el caso correspondiente dentro de la función renderTarjeta().
+    ============================================================ -->
+    <div class="toggle-modo-grafico-linea" id="toggleModoGraficoLinea">
+        <button type="button" class="toggle-modo-btn is-active" data-modo="resultado">
+            Resultado
+        </button>
+        <button type="button" class="toggle-modo-btn" data-modo="cumplimiento">
+            % Cumplimiento
+        </button>
+    </div>
+
+    <div class="tablero-grafico-linea">
+
+        <!-- ============================================================
+        KPI 1: SELL OUT (SO)
+        ============================================================
+        Para agregar un nuevo KPI:
+        1. Copia todo este bloque <div class="tarjeta-kpi-grafico-linea">...</div>
+        2. Pégalo al final del .tablero-grafico-linea (antes del cierre </div>)
+        3. Cambia el ID (ej: de "kpi1-grafico-linea" a "kpi5-grafico-linea")
+        4. Cambia el título, subtítulo y el valor inicial del promedio
+        5. (Opcional) Cambia el logo (ver instrucciones abajo)
+        ============================================================ -->
+        <div class="tarjeta-kpi-grafico-linea" id="kpi1-grafico-linea">
+            <div class="encabezado-kpi-grafico-linea">
+                <div class="logo-kpi-grafico-linea">
+                    <!-- LOGO ACTUAL: Ícono de tendencia ascendente (coherente con la
+                        flip-card de SELL OUT de más arriba). Para cambiarlo, reemplaza
+                        TODO el <svg>...</svg> por otro.
+                        Opciones:
+                        A) Otro SVG inline (busca íconos en heroicons.com, lucide.dev, etc.)
+                        B) Una imagen: <img src="ruta/a/tu-logo.png" alt="Logo">
+                        C) Un emoji: <span style="font-size:28px">🎯</span>
+                    -->
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="16 7 22 7 22 13" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-grafico-linea" data-field="title">SELL OUT (SO)</div>
+                    <div class="subtitulo-kpi-grafico-linea" data-field="subtitle">TM</div>
+                </div>
+            </div>
+            <div class="area-grafico-linea">
+                <svg class="svg-grafico-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-grafico-linea">
+                    <div class="semana-grafico-linea"></div>
+                    <div class="valor-grafico-linea"></div>
+                </div>
+            </div>
+            <div class="promedio-kpi-grafico-linea" data-field="avg">0%</div>
+        </div>
+
+        <!-- ============================================================
+        KPI 2: BRECHA
+        ============================================================ -->
+        <div class="tarjeta-kpi-grafico-linea" id="kpi2-grafico-linea">
+            <div class="encabezado-kpi-grafico-linea">
+                <div class="logo-kpi-grafico-linea">
+                    <!-- LOGO: Ícono de brecha/gap (coherente con la flip-card de BRECHA) -->
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="18" y1="8" x2="18" y2="16" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="6" y1="8" x2="6" y2="16" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="18" y1="12" x2="22" y2="12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="2" y1="12" x2="6" y2="12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="9" y1="12" x2="15" y2="12" stroke="#fff" stroke-width="1.8" stroke-dasharray="2 2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-grafico-linea" data-field="title">BRECHA</div>
+                    <div class="subtitulo-kpi-grafico-linea" data-field="subtitle">%</div>
+                </div>
+            </div>
+            <div class="area-grafico-linea">
+                <svg class="svg-grafico-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-grafico-linea">
+                    <div class="semana-grafico-linea"></div>
+                    <div class="valor-grafico-linea"></div>
+                </div>
+            </div>
+            <div class="promedio-kpi-grafico-linea" data-field="avg">0%</div>
+        </div>
+
+        <!-- ============================================================
+        KPI 3: EFICIENCIA DE INVERSIÓN (EI)
+        ============================================================ -->
+        <div class="tarjeta-kpi-grafico-linea" id="kpi3-grafico-linea">
+            <div class="encabezado-kpi-grafico-linea">
+                <div class="logo-kpi-grafico-linea">
+                    <!-- LOGO: Ícono de dinero/inversión (coherente con la flip-card de EI) -->
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="12" y1="1" x2="12" y2="23" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-grafico-linea" data-field="title">EFICIENCIA DE INVERSIÓN (EI)</div>
+                    <div class="subtitulo-kpi-grafico-linea" data-field="subtitle">%</div>
+                </div>
+            </div>
+            <div class="area-grafico-linea">
+                <svg class="svg-grafico-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-grafico-linea">
+                    <div class="semana-grafico-linea"></div>
+                    <div class="valor-grafico-linea"></div>
+                </div>
+            </div>
+            <div class="promedio-kpi-grafico-linea" data-field="avg">0</div>
+        </div>
+
+        <!-- ============================================================
+        KPI 4: PARTICIPACIÓN
+        ============================================================ -->
+        <div class="tarjeta-kpi-grafico-linea" id="kpi4-grafico-linea">
+            <div class="encabezado-kpi-grafico-linea">
+                <div class="logo-kpi-grafico-linea">
+                    <!-- LOGO: Ícono de participación (gráfico de torta, coherente con la flip-card) -->
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 12A10 10 0 0 0 12 2v10z" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-grafico-linea" data-field="title">PARTICIPACIÓN</div>
+                    <div class="subtitulo-kpi-grafico-linea" data-field="subtitle">%</div>
+                </div>
+            </div>
+            <div class="area-grafico-linea">
+                <svg class="svg-grafico-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-grafico-linea">
+                    <div class="semana-grafico-linea"></div>
+                    <div class="valor-grafico-linea"></div>
+                </div>
+            </div>
+            <div class="promedio-kpi-grafico-linea" data-field="avg">$0</div>
+        </div>
+
+        <!-- ============================================================
+        KPI 5: NPS
+        ============================================================
+        Para agregar un 6to KPI, simplemente repite este bloque
+        cambiando el ID y los datos.
+        ============================================================ -->
+        <div class="tarjeta-kpi-grafico-linea" id="kpi5-grafico-linea">
+            <div class="encabezado-kpi-grafico-linea">
+                <div class="logo-kpi-grafico-linea">
+                <!-- LOGO: Ícono de estrella (coherente con la flip-card de NPS) -->
+                    <svg viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-grafico-linea" data-field="title">NPS</div>
+                    <div class="subtitulo-kpi-grafico-linea" data-field="subtitle">Pts</div>
+                </div>
+            </div>
+            <div class="area-grafico-linea">
+                <svg class="svg-grafico-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-grafico-linea">
+                    <div class="semana-grafico-linea"></div>
+                    <div class="valor-grafico-linea"></div>
+                </div>
+            </div>
+            <div class="promedio-kpi-grafico-linea" data-field="avg">0%</div>
+        </div>
+
+    </div>       
+
+
+    <!-- CARRUSEL DE INSIGHTS (MOVIDO Y MODIFICADO) -->
+    <section class="insights-section" id="insightsSection">
+        <div class="insights-header">
+            <h2>INSIGHTS DE LA SEMANA</h2>
+        </div>
+        <div class="insight-carousel-wrapper">
+            <button type="button" class="insight-nav-btn" id="insightPrev" aria-label="Anterior">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="insight-detail" id="insightDetail">
+                <!-- Contenido dinámico inyectado por JS -->
+            </div>
+            <button type="button" class="insight-nav-btn" id="insightNext" aria-label="Siguiente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+        </div>
+    </section>
+
+
+
+
+</section>
+ 
+    <!-- PANEL DERECHO -->
+    <aside class="right-panel">
+         
+        <!-- EVIDENCIAS -->
+        <section class="evidence-section">
+            <div class="evidence-header">
+                <h2>EVIDENCIA EN PDV</h2>
+                <div class="evidence-filters">
+                    SKU: Todos | Ciudad: Todas | Semana: 20
+                </div>
+            </div>
+            <!-- Carrusel de evidencias -->
+            <div class="carousel" id="evidenceCarousel">
+                <button type="button" class="carousel-btn carousel-btn--prev" aria-label="Imagen anterior">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+ 
+                <div class="carousel-viewport">
+                    <ul class="carousel-track">
+                        <li class="carousel-slide">
+                            <img src="img/Evidencia Activación 1.jpeg" alt="Evidencia de activación en PDV 1">
+                        </li>
+                        <li class="carousel-slide">
+                            <img src="img/Evidencia Activación 2.jpeg" alt="Evidencia de activación en PDV 2">
+                        </li>
+                        <li class="carousel-slide">
+                            <img src="img/Evidencia Activación 3.jpeg" alt="Evidencia de activación en PDV 3">
+                        </li>
+                        <li class="carousel-slide">
+                            <img src="img/Evidencia Activación 4.jpeg" alt="Evidencia de activación en PDV 4">
+                        </li>
+                        <li class="carousel-slide">
+                            <img src="img/Evidencia Activación 5.jpeg" alt="Evidencia de activación en PDV 5">
+                        </li>
+                    </ul>
+                </div>
+ 
+                <button type="button" class="carousel-btn carousel-btn--next" aria-label="Imagen siguiente">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+ 
+                <!-- El JS genera los puntos de navegación automáticamente -->
+                <div class="carousel-dots" id="evidenceCarouselDots"></div>
+ 
+            </div>
+ 
+                <!--
+                    PARA AGREGAR MÁS EVIDENCIAS EN EL FUTURO:
+                    solo agrega otro <li class="carousel-slide"><img ...></li>
+                    dentro de <ul class="carousel-track">. El carousel.js
+                    detecta automáticamente cuántas imágenes hay y genera
+                    los puntos y controles correspondientes.
+                -->
+ 
+        </section>
+    </aside>
+</main>
+
+
+
+
+
+<script src="js/botones.js"></script>
+<script src="js/KPI.js"></script>
+<script src="js/Insights.js"></script>
+<script src="js/Carousel.js"></script>
+<script src="js/grafico_de_lineas.js"></script>
+
+</body>
+</html>
