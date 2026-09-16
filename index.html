@@ -61,8 +61,10 @@
             </button>
             <!-- Lista de opciones -->
             <ul class="dropdown-menu">
-                <li class="dropdown-item">Con Actividad</li>
-                <li class="dropdown-item">Sin Actividad</li>
+                <li class="dropdown-item">Tipo 1</li>
+                <li class="dropdown-item">Tipo 2</li>
+                <li class="dropdown-item">Tipo 3</li>
+                <li class="dropdown-item">Tipo 4</li>
             </ul>
         </div>
 
@@ -367,11 +369,11 @@
     agrega el caso correspondiente dentro de la función renderTarjeta().
     ============================================================ -->
     <div class="toggle-modo-grafico-linea" id="toggleModoGraficoLinea">
-        <button type="button" class="toggle-modo-btn is-active" data-modo="resultado">
-            Resultado
-        </button>
-        <button type="button" class="toggle-modo-btn" data-modo="cumplimiento">
+        <button type="button" class="toggle-modo-btn is-active" data-modo="cumplimiento">
             % Cumplimiento
+        </button>
+        <button type="button" class="toggle-modo-btn" data-modo="resultado">
+            Resultado
         </button>
     </div>
 
@@ -533,86 +535,149 @@
 
     </div>       
 
-
-    <!-- CARRUSEL DE INSIGHTS (MOVIDO Y MODIFICADO) -->
-    <section class="insights-section" id="insightsSection">
-        <div class="insights-header">
-            <h2>INSIGHTS DE LA SEMANA</h2>
-        </div>
-        <div class="insight-carousel-wrapper">
-            <button type="button" class="insight-nav-btn" id="insightPrev" aria-label="Anterior">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            <div class="insight-detail" id="insightDetail">
-                <!-- Contenido dinámico inyectado por JS -->
-            </div>
-            <button type="button" class="insight-nav-btn" id="insightNext" aria-label="Siguiente">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
-        </div>
-    </section>
-
-
-
-
 </section>
  
     <!-- PANEL DERECHO -->
     <aside class="right-panel">
-         
+        
+        <!-- CARRUSEL DE INSIGHTS (MOVIDO Y MODIFICADO) -->
+        <section class="insights-section" id="insightsSection">
+            <div class="insights-header">
+                <h2>INSIGHTS DE LA SEMANA</h2>
+                <!-- NUEVO: Contenedor donde JS inyectará los botones circulares automáticamente -->
+                <div class="insights-indicators" id="insightIndicators"></div>
+            </div>
+            <div class="insight-carousel-wrapper">
+                <button type="button" class="insight-nav-btn" id="insightPrev" aria-label="Anterior">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <div class="insight-detail" id="insightDetail">
+                    <!-- Contenido dinámico inyectado por JS -->
+                </div>
+                <button type="button" class="insight-nav-btn" id="insightNext" aria-label="Siguiente">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+
         <!-- EVIDENCIAS -->
         <section class="evidence-section">
+
             <div class="evidence-header">
                 <h2>EVIDENCIA EN PDV</h2>
                 <div class="evidence-filters">
                     SKU: Todos | Ciudad: Todas | Semana: 20
                 </div>
             </div>
-            <!-- Carrusel de evidencias -->
-            <div class="carousel" id="evidenceCarousel">
+
+            <!-- ============================================================
+                 CARRUSEL DE EVIDENCIAS — loop infinito (nunca "corta" al
+                 llegar a la última foto, ver la explicación completa en
+                 Carousel.js, arriba del todo del archivo).
+
+                 CÓMO AGREGAR UNA FOTO NUEVA:
+                   1. Copia un bloque completo <li class="carousel-slide">
+                      ...</li> de los que hay abajo (con su
+                      <div class="carousel-item"><img></div> y su
+                      <div class="carousel-caption">).
+                   2. Pégalo dentro de <ul class="carousel-track">, en
+                      cualquier posición.
+                   3. Cambia el "src"/"alt" del <img> y el texto de la
+                      leyenda (nombre del PDV / ciudad · canal).
+                   El carrusel detecta la foto nueva solo — no hay que
+                   tocar Carousel.js ni Carousel.css para nada de esto.
+
+                 CÓMO QUITAR UNA FOTO: borra su <li class="carousel-slide">
+                   ...</li> completo. También automático.
+
+                 CÓMO CAMBIAR UNA FOTO O SU LEYENDA: dentro de su <li>,
+                   cambia el "src"/"alt" del <img>, y el texto del
+                   <strong> (nombre del PDV) y del <span> (ciudad · canal)
+                   de su <div class="carousel-caption">. Ahora mismo son
+                   placeholders — reemplázalos por los datos reales.
+
+                 data-visible="3": cuántas fotos se ven al mismo tiempo.
+                   Cámbialo a 1, 2, 4... si quieres otra cantidad — no
+                   hace falta tocar CSS ni JS. En celular siempre se
+                   fuerza a 1 sin importar este número (más fácil de ver
+                   en pantalla angosta).
+                 ============================================================ -->
+            <div class="carousel" id="evidenceCarousel" data-visible="3">
                 <button type="button" class="carousel-btn carousel-btn--prev" aria-label="Imagen anterior">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
                 </button>
- 
+
                 <div class="carousel-viewport">
                     <ul class="carousel-track">
                         <li class="carousel-slide">
-                            <img src="img/Evidencia Activación 1.jpeg" alt="Evidencia de activación en PDV 1">
+                            <div class="carousel-item">
+                                <img src="img/Evidencia Activación 1.jpeg" alt="Evidencia de activación en PDV 1">
+                            </div>
+                            <div class="carousel-caption">
+                                <strong>Nombre del PDV</strong>
+                                <span>Ciudad · Canal</span>
+                            </div>
                         </li>
                         <li class="carousel-slide">
-                            <img src="img/Evidencia Activación 2.jpeg" alt="Evidencia de activación en PDV 2">
+                            <div class="carousel-item">
+                                <img src="img/Evidencia Activación 2.jpeg" alt="Evidencia de activación en PDV 2">
+                            </div>
+                            <div class="carousel-caption">
+                                <strong>Nombre del PDV</strong>
+                                <span>Ciudad · Canal</span>
+                            </div>
                         </li>
                         <li class="carousel-slide">
-                            <img src="img/Evidencia Activación 3.jpeg" alt="Evidencia de activación en PDV 3">
+                            <div class="carousel-item">
+                                <img src="img/Evidencia Activación 3.jpeg" alt="Evidencia de activación en PDV 3">
+                            </div>
+                            <div class="carousel-caption">
+                                <strong>Nombre del PDV</strong>
+                                <span>Ciudad · Canal</span>
+                            </div>
                         </li>
                         <li class="carousel-slide">
-                            <img src="img/Evidencia Activación 4.jpeg" alt="Evidencia de activación en PDV 4">
+                            <div class="carousel-item">
+                                <img src="img/Evidencia Activación 4.jpeg" alt="Evidencia de activación en PDV 4">
+                            </div>
+                            <div class="carousel-caption">
+                                <strong>Nombre del PDV</strong>
+                                <span>Ciudad · Canal</span>
+                            </div>
                         </li>
                         <li class="carousel-slide">
-                            <img src="img/Evidencia Activación 5.jpeg" alt="Evidencia de activación en PDV 5">
+                            <div class="carousel-item">
+                                <img src="img/Evidencia Activación 5.jpeg" alt="Evidencia de activación en PDV 5">
+                            </div>
+                            <div class="carousel-caption">
+                                <strong>Nombre del PDV</strong>
+                                <span>Ciudad · Canal</span>
+                            </div>
                         </li>
                     </ul>
                 </div>
- 
+
                 <button type="button" class="carousel-btn carousel-btn--next" aria-label="Imagen siguiente">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
- 
-                <!-- El JS genera los puntos de navegación automáticamente -->
-                <div class="carousel-dots" id="evidenceCarouselDots"></div>
- 
+
+                <!-- Sin puntos de navegación en este carrusel (solo flechas,
+                     igual que la maqueta de referencia). Si algún día quieres
+                     agregarlos, solo hace falta volver a poner acá un
+                     <div class="carousel-dots"></div> — Carousel.js los
+                     detecta solo si existen, no hay que tocar el JS. -->
+
             </div>
  
                 <!--
-                    PARA AGREGAR MÁS EVIDENCIAS EN EL FUTURO:
-                    solo agrega otro <li class="carousel-slide"><img ...></li>
-                    dentro de <ul class="carousel-track">. El carousel.js
-                    detecta automáticamente cuántas imágenes hay y genera
-                    los puntos y controles correspondientes.
+                    Instrucciones completas para agregar/quitar/cambiar
+                    fotos: ver el comentario grande justo ARRIBA de
+                    <div class="carousel" id="evidenceCarousel">.
                 -->
  
         </section>
