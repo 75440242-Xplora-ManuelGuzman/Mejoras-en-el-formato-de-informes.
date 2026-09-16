@@ -1,0 +1,231 @@
+      .tablero-grafico-linea {
+            display: flex;
+            flex-direction: column;
+            gap: 6px; /* Reducido drásticamente para evitar scroll */
+            max-width: 800px;
+            width: 100%;
+
+            /* --- Layout "sin scroll" (ver comentario grande en styles.css) ---
+               En vez de que este bloque tenga la altura "natural" de su
+               contenido, lo hacemos crecer/encogerse para ocupar TODO el
+               alto que .left-panel le deje disponible (descontando lo que
+               ocupa .insights-section, que va después, más abajo). */
+            flex: 1 1 auto;
+            min-height: 0;
+            /* OJO: sin overflow:hidden a propósito — recortaría el tooltip
+               de "semana" cuando aparece pegado arriba de la primera fila. */
+        }
+
+        .tarjeta-kpi-grafico-linea {
+            background: #ffffff;
+            border-radius: 10px; 
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            padding: 8px 16px; /* Aún más reducido */
+            display: flex;
+            align-items: center;
+            gap: 12px; 
+            width: 100%;
+
+            /* --- Las 5 tarjetas se reparten en partes IGUALES el alto
+                   disponible de .tablero-grafico-linea (arriba). Si agregas
+                   una 6ta tarjeta, este mismo CSS la acomoda sola. --- */
+            flex: 1 1 0;
+            min-height: 0;
+            /* OJO: sin overflow:hidden a propósito (ver más arriba) —
+               es lo que estaba recortando el tooltip. La altura de esta
+               tarjeta ya queda perfectamente controlada por flexbox
+               (flex + min-height:0), así que overflow:hidden aquí era
+               redundante Y encima rompía el tooltip. */
+        }
+
+        .encabezado-kpi-grafico-linea {
+            display: flex;
+            align-items: center;
+            gap: 8px; 
+            flex-shrink: 0;
+            width: 150px; /* Más compacto */
+        }
+
+        .logo-kpi-grafico-linea {
+            width: 30px; /* Reducido */
+            height: 30px; 
+            border-radius: 50%;
+            background: #1e5c3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(30, 92, 58, 0.25);
+        }
+
+        .logo-kpi-grafico-linea svg {
+            width: 16px; 
+            height: 16px; 
+        }
+
+        .titulo-kpi-grafico-linea {
+            font-size: 11px; /* Letra más pequeña */
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 0.3px;
+        }
+
+        .subtitulo-kpi-grafico-linea {
+            font-size: 9px; /* Letra más pequeña */
+            color: #7a7a7a;
+            margin-top: 1px;
+        }
+
+        .area-grafico-linea {
+            flex: 1;
+            position: relative;
+            height: auto;   /* antes: 32px fijo. Ahora se estira con .tarjeta-kpi-grafico-linea */
+            min-height: 0;
+            min-width: 0;
+        }
+
+        .area-grafico-linea svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .promedio-kpi-grafico-linea {
+            font-size: 22px; /* Reducido */
+            font-weight: 800;
+            flex-shrink: 0;
+            width: 70px; 
+            text-align: right;
+            letter-spacing: -0.5px;
+            margin-left: auto;
+            transition: color 0.3s ease;
+        }
+
+        .tooltip-grafico-linea {
+            position: absolute;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.18s ease;
+            white-space: nowrap;
+            transform: translate(-50%, -100%);
+            margin-top: -8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .tooltip-grafico-linea::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: #1a1a1a;
+        }
+
+        .tooltip-grafico-linea .semana-grafico-linea {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .tooltip-grafico-linea .valor-grafico-linea {
+            color: #b7f0d0;
+            font-weight: 700;
+        }
+
+        .punto-nucleo-grafico-linea {
+            transition: r 0.2s ease, fill 0.3s ease;
+            cursor: pointer;
+        }
+
+        .grupo-puntos-grafico-linea:hover .punto-nucleo-grafico-linea {
+            r: 6; /* Tamaño aumentado en el hover para que destaquen al interactuar */
+        }
+
+        @media (max-width: 720px) {
+            .tarjeta-kpi-grafico-linea {
+                flex-wrap: wrap;
+                padding: 16px;
+                gap: 12px;
+            }
+            .encabezado-kpi-grafico-linea {
+                width: auto;
+                min-width: auto;
+            }
+            .area-grafico-linea {
+                order: 3;
+                width: 100%;
+                flex: 1 1 100%;
+            }
+            .promedio-kpi-grafico-linea {
+                font-size: 24px;
+                width: auto;
+                min-width: 80px;
+            }
+        }
+
+        /* ===========================================================
+           TOGGLE MODO: "Resultado" / "% Cumplimiento"
+           Ver el HTML (dentro de .left-panel, antes de .tablero-grafico-linea)
+           y la lógica en grafico_de_lineas.js
+           (función inicializarToggleModoVisualizacion()).
+           =========================================================== */
+        .toggle-modo-grafico-linea {
+            display: inline-flex;
+            background-color: #F1F3F4;
+            border-radius: 10px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 10px;
+            flex-shrink: 0; /* Que nunca se achique, es parte del "piso fijo" de left-panel */
+            align-self: flex-start; /* Que no se estire a lo ancho del panel */
+        }
+
+        .toggle-modo-btn {
+            border: none;
+            background: transparent;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            color: #5F6368;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .toggle-modo-btn:hover {
+            color: #1a1a1a;
+        }
+
+        /* Botón activo: fondo verde sólido, texto blanco (mismo estilo
+           que ya usas en el resto del dashboard) */
+        .toggle-modo-btn.is-active {
+            background-color: #0A703D;
+            color: #FFFFFF;
+        }
+
+        /* ===========================================================
+           GRÁFICO DE BARRAS (modo "% Cumplimiento")
+           Reutiliza el mismo <svg class="svg-grafico-linea"> y el mismo
+           .tooltip-grafico-linea que el modo "Resultado" — por eso no
+           necesita casi CSS propio, solo estas 2 clases.
+           =========================================================== */
+        .barra-cumplimiento-grafico-linea {
+            transition: opacity 0.15s ease;
+            /* pointer-events:none se define desde el JS: el hover lo
+               detecta .area-deteccion-grafico-linea (más abajo), que es
+               más grande e invisible, para que sea fácil "acertarle" con
+               el mouse incluso a las barras muy bajitas (ej. 0% de
+               cumplimiento). Ver renderBarrasCumplimiento() en
+               grafico_de_lineas.js. */
+        }
+
+        .area-deteccion-grafico-linea {
+            cursor: pointer;
+        }

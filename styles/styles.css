@@ -1,1 +1,231 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Para que padding/border no sumen ancho/alto extra y desborden el layout */
+}
 
+/* ===========================================================================
+   LAYOUT "SIN SCROLL" — LÉEME ANTES DE TOCAR ESTA SECCIÓN
+   ===========================================================================
+   Requisito del proyecto: la página NUNCA debe generar scroll, ni vertical
+   ni horizontal. La estrategia es:
+
+   1) <html> y <body> miden EXACTAMENTE el alto de la ventana (100vh) y tienen
+      overflow: hidden. Esto es lo que garantiza al 100% que jamás aparezca
+      una barra de scroll en el navegador, pase lo que pase adentro.
+
+   2) <body> es un contenedor flex en columna con 3 "pisos":
+        - .main-header       -> alto fijo (no se estira ni se encoge)
+        - .kpis-container    -> alto fijo (no se estira ni se encoge)
+        - <main>              -> flex: 1  (se queda con TODO el espacio
+                                  vertical restante, sea cual sea el alto
+                                  de pantalla)
+
+   3) Dentro de <main>, .left-panel y .right-panel también son columnas
+      flex que reparten SU espacio disponible entre sus propias secciones
+      internas (ver KPI.css, grafico_de_lineas.css y Carousel.css: ahí
+      están las reglas que hacen que el gráfico de líneas y el carrusel
+      de evidencias "se estiren" para ocupar el espacio sobrante en vez
+      de tener una altura fija en píxeles).
+
+   ¿CÓMO AJUSTAR SI ALGO SE VE MUY APRETADO EN UNA PANTALLA CHICA?
+   - Reduce el alto de las KPI cards: buscar ".kpi-card" en KPI.css
+     (usa clamp(), así que ya se adapta un poco solo).
+   - Reduce el padding de .main-header más abajo en este archivo.
+   - Si necesitas MÁS margen de maniobra, puedes bajar el "min-height: 0"
+     de algún contenedor flex-child, pero cuidado: quitar min-height:0
+     puede hacer que ese contenedor vuelva a desbordar.
+   =========================================================================== */
+
+html, body {
+    height: 100%;           /* body ocupa el 100% del alto de <html>, que a su vez... */
+    overflow: hidden;       /* ...NUNCA permite scroll, sin importar cuánto contenido haya */
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* Header arriba, KPIs debajo, main ocupando el resto */
+}
+
+/* Opción A: aplicar la fuente a TODO el sitio de una vez.
+   Como los botones, inputs y selects normalmente NO heredan
+   la fuente del body en algunos navegadores, los incluimos
+   explícitamente aquí también. */
+body, button, input, select, textarea {
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+/* Opción B: clase utilitaria para aplicar la fuente SOLO donde
+   tú quieras (tal como recordabas). Úsala así en el HTML:
+   <p class="font-primor">Este texto usa Poppins</p>
+   Es redundante si ya usaste la Opción A arriba, pero te sirve
+   si en el futuro cambias el font-family global a otra fuente
+   y quieres mantener Poppins solo en ciertos textos puntuales. */
+.font-primor {
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  background-color: #0A703D;
+  padding: 0.5rem;
+  color: #fff;
+  flex-shrink: 0; /* Piso fijo: nunca se achica, sin importar cuánto midan los demás */
+}
+
+.contenedor-logo-texto {
+  display: flex;
+}
+
+.contenedor-botones-filtros {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Espacio uniforme entre cada filtro */
+}
+
+/* Texto de "Última actualización" pegado a la derecha */
+.texto-derecha {
+  text-align: right;
+  padding: 0.4rem 1rem 0 0;
+  font-size: 12px;
+  color: #80868B; /* Gris claro, mismo tono que usas en .value */
+}
+
+/* ===========================================================
+   IMAGEN DEMO DEL DASHBOARD (maqueta del gráfico de KPIs)
+   =========================================================== */
+.left-panel {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.2rem;
+
+  /* --- Para que .tablero-grafico-linea pueda estirarse y ocupar el alto
+         disponible en vez de quedar con altura fija (ver grafico_de_lineas.css) --- */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  /* OJO: aquí NO va overflow:hidden. Si lo agregas, vuelve a recortar
+     el tooltip de "semana" del gráfico de líneas/barras cuando aparece
+     pegado al borde superior de la tarjeta. El "no-scroll" de la página
+     ya está 100% garantizado por html/body/main en este mismo archivo,
+     así que no hace falta repetirlo aquí. */
+}
+
+.panel-header h2 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #202124;
+  letter-spacing: 0.3px;
+  margin-bottom: 0.9rem;
+}
+
+.chart-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-demo-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+.chart-demo-note {
+  font-size: 11px;
+  color: #80868B;
+  font-style: italic;
+  margin-top: 0.5rem;
+  align-self: flex-start;
+}
+
+/* ===========================================================
+   LAYOUT PRINCIPAL (panel izquierdo + panel derecho)
+   =========================================================== */
+main {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 1rem;
+  padding: 0 1rem 1rem;
+  align-items: start;
+
+  /* --- Piso flexible del layout "sin scroll" (ver comentario arriba del archivo) --- */
+  flex: 1 1 auto;   /* Ocupa TODO el alto restante debajo del header + KPIs */
+  min-height: 0;    /* Imprescindible en flex/grid para que pueda encogerse sin desbordar */
+  overflow: hidden; /* Refuerzo extra: nada dentro de <main> puede generar scroll */
+  align-items: stretch; /* (antes: start) — para que left-panel/right-panel midan el 100% del alto de <main> */
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  /* --- Para que pueda repartir el alto completo entre sus secciones internas --- */
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.evidence-section {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.2rem;
+
+  /* --- Para que .carousel (ver Carousel.css) pueda estirarse y ocupar
+         el alto disponible en vez de tener una altura fija en píxeles --- */
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.evidence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.8rem;
+  flex-shrink: 0; /* Que el carrusel de abajo nunca le quite espacio a este título */
+}
+
+.evidence-header h2 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #202124;
+}
+
+.evidence-filters {
+  font-size: 11px;
+  color: #80868B;
+}
+
+.contenedor-logo, .contenedor-texto {
+  padding: 0rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Línea vertical divisoria entre el logo y el título */
+.contenedor-texto {
+  border-left: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.contenedor-texto h1 {
+  font-size: 25px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+.logo-primor {
+    max-width: 80px;
+    height: auto;
+}

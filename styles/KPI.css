@@ -1,0 +1,365 @@
+/* ===========================================================
+   KPI CARDS — Contenedor
+   auto-fit + minmax: el grid se adapta solo al agregar o
+   quitar tarjetas, sin tocar el CSS.
+   =========================================================== */
+.kpis-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+    padding: 8px 0;
+    flex-shrink: 0; /* Layout "sin scroll" (ver styles.css): piso fijo, no se achica */
+}
+
+/* ===========================================================
+   Estructura de la tarjeta (para el efecto flip 3D)
+   =========================================================== */
+.kpi-card {
+    perspective: 1200px; /* Profundidad del giro 3D */
+    /* clamp(mínimo, preferido, máximo): en pantallas bajas se achica un
+       poco solo (hasta 90px) y en pantallas altas crece un poco (hasta
+       150px), en vez de quedar siempre fija en 135px. Esto ayuda a que
+       el layout completo quepa sin scroll en más tamaños de pantalla. */
+    height: clamp(90px, 14vh, 150px);
+}
+
+.kpi-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+/* Al pasar el mouse, gira la tarjeta */
+.kpi-card:hover .kpi-card-inner {
+    transform: rotateY(180deg);
+}
+
+.kpi-card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    padding: 10px 14px;
+}
+
+/*.kpi-card-front {
+    display: flex;
+    flex-direction: column;
+}*/
+
+.kpi-card-front {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+        "icon     value"
+        "header   meta"
+        "progress progress"
+        "footer   footer";
+    row-gap: 2px;
+    align-items: start;
+}
+
+
+.kpi-card-back {
+    transform: rotateY(180deg);
+    background-color: #F4FBF5; /* Verde muy suave para diferenciar la cara trasera */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.kpi-card-back h3 {
+    font-size: 13px;
+    color: #017d03;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.kpi-card-back p {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #3C4043;
+}
+
+/* ===========================================================
+   Ícono
+   =========================================================== */
+
+/*   
+.kpi-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #017d03;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-icon svg {
+    width: 18px;
+    height: 18px;
+}
+*/
+
+.kpi-icon {
+    grid-area: icon;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: #017d03;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+}
+
+.kpi-icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ===========================================================
+   Encabezado / valor / meta
+   =========================================================== */
+
+/*   
+.kpi-header h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: #3C4043;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.3rem;
+}
+
+.kpi-value {
+    font-size: 50px;
+    font-weight: 800;
+    color: #202124;
+    line-height: 1.2;
+}
+
+.kpi-meta {
+    font-size: 12px;
+    color: #80868B;
+    margin-bottom: 0.5rem;
+}
+*/
+
+.kpi-header {
+    grid-area: header;
+}
+
+.kpi-header h3 {
+    font-size: 11px;
+    font-weight: 700;
+    color: #3C4043;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    margin-bottom: 0;
+    line-height: 1.2;
+}
+
+.kpi-value {
+    grid-area: value;
+    font-size: 28px; /* Ligeramente achicado (antes 50px) y ubicado a la esquina superior derecha */
+    font-weight: 800;
+    color: #202124;
+    line-height: 1;
+    text-align: right;
+    justify-self: end;
+}
+
+.kpi-meta {
+    grid-area: meta;
+    font-size: 10px;
+    color: #80868B;
+    text-align: right;
+    justify-self: end;
+    margin-bottom: 4px;
+}
+
+
+
+
+/* ===========================================================
+   Barra de progreso (reemplaza al <hr>)
+   El ancho y color los define el JS según data-compliance
+   =========================================================== */
+
+/*
+.kpi-progress {
+    width: 100%;
+    height: 5px;
+    background-color: #E8EAED;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 0.6rem;
+}*/
+
+.kpi-progress {
+    grid-area: progress;
+    width: 100%;
+    height: 4px;
+    background-color: #E8EAED;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 4px;
+    margin-bottom: 6px;
+    align-self: center;
+}
+
+.kpi-progress-bar {
+    height: 100%;
+    width: 0%; /* El JS lo actualiza dinámicamente */
+    border-radius: 999px;
+    transition: width 0.6s ease;
+    background-color: #80868B; /* Color por defecto antes de que corra el JS */
+}
+
+/* ===========================================================
+   Footer: % de cumplimiento + variación
+   =========================================================== */
+
+/*
+.kpi-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+*/
+
+.kpi-footer {
+    grid-area: footer;
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kpi-compliance {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+/*
+.kpi-compliance strong {
+    font-size: 16px;
+}
+
+.kpi-compliance span {
+    font-size: 11px;
+    color: #80868B;
+}
+
+.kpi-variation {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+*/
+
+.kpi-compliance strong {
+    font-size: 12px;
+}
+
+.kpi-compliance span {
+    font-size: 10px;
+    color: #80868B;
+}
+
+.kpi-variation {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.kpi-variation-arrow {
+    font-size: 10px;
+}
+
+.kpi-card-back {
+    transform: rotateY(180deg);
+    background-color: #F4FBF5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 14px;
+}
+
+.kpi-card-back h3 {
+    font-size: 11px;
+    color: #017d03;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+}
+
+.kpi-card-back p {
+    font-size: 10px;
+    line-height: 1.3;
+    color: #3C4043;
+    margin: 0;
+}
+
+
+/* ===========================================================
+   Colores de estado (verde / naranja / rojo)
+   El JS agrega automáticamente una de estas 3 clases a la
+   tarjeta según el % de cumplimiento (data-compliance).
+   =========================================================== */
+
+/* Éxito: cumplimiento alto */
+.kpi-card.status-success .kpi-compliance strong { color: #017d03; }
+.kpi-card.status-success .kpi-progress-bar { background-color: #34A853; }
+.kpi-card.status-success .kpi-variation {
+    background-color: #E6F4EA;
+    color: #1E8E3E;
+}
+
+/* Advertencia: cumplimiento medio */
+.kpi-card.status-warning .kpi-compliance strong { color: #B06000; }
+.kpi-card.status-warning .kpi-progress-bar { background-color: #F9A825; }
+.kpi-card.status-warning .kpi-variation {
+    background-color: #FEF3E0;
+    color: #B06000;
+}
+
+/* Peligro: cumplimiento bajo */
+.kpi-card.status-danger .kpi-compliance strong { color: #C5221F; }
+.kpi-card.status-danger .kpi-progress-bar { background-color: #EA4335; }
+.kpi-card.status-danger .kpi-variation {
+    background-color: #FCE8E6;
+    color: #C5221F;
+}
+
+
+
+        
+
+        
+
+        
+
+        
+
+        
+

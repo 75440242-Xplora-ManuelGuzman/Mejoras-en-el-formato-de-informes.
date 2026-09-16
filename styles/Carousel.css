@@ -1,0 +1,110 @@
+/* ===========================================================
+   CARRUSEL DE EVIDENCIAS
+   Tamaño fijo: todas las imágenes se recortan (object-fit)
+   para verse igual sin importar su tamaño/orientación original.
+   =========================================================== */
+.carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    /* --- Layout "sin scroll" (ver comentario grande en styles.css) ---
+       Ocupa todo el alto que .evidence-section le deje disponible. */
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.carousel-viewport {
+    flex: 1;
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: #F1F3F4;
+
+    /* antes: height: 275px (fijo). Ahora se estira con .carousel de arriba,
+       así el carrusel siempre ocupa el espacio disponible sin desbordar. */
+    height: auto;
+    align-self: stretch;
+    min-height: 0;
+}
+
+.carousel-track {
+    display: flex;
+    height: 100%;
+    list-style: none;
+    transition: transform 0.4s ease;
+}
+
+.carousel-slide {
+    flex: 0 0 100%;
+    height: 100%;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Recorta manteniendo proporción, tamaño siempre igual */
+    display: block;
+}
+
+/* --- Flechas --- */
+.carousel-btn {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background-color: #FFFFFF;
+    color: #017d03;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.carousel-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.carousel-btn:hover {
+    background-color: #F1F3F4;
+    transform: scale(1.05);
+}
+
+.carousel-btn:focus-visible {
+    outline: 2px solid #017d03;
+    outline-offset: 2px;
+}
+
+/* --- Puntos de navegación --- */
+.carousel-dots {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    pointer-events: none; /* Deja pasar clics salvo en los puntos mismos */
+}
+
+.carousel-dot {
+    pointer-events: auto;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.carousel-dot.is-active {
+    background-color: #017d03;
+    transform: scale(1.2);
+}
