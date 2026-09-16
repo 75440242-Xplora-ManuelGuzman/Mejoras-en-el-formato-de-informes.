@@ -1,6 +1,22 @@
 // ===========================================================
 // KPI CARDS — Lógica de estado, barra de progreso y animación
 // ===========================================================
+//
+// ⚠️ OJO: este archivo SOLO controla el color de las 5 tarjetas de
+// arriba (las que giran al hacer clic/hover). El gráfico de líneas
+// grande de más abajo (modos "Resultado" / "% Cumplimiento") tiene su
+// PROPIO sistema de color, independiente de este — ver "colorValor" y
+// la función colorSegunPorcentaje() en grafico_de_lineas.js.
+//
+// CÓMO CAMBIAR EL % (Y POR LO TANTO EL COLOR) DE UNA TARJETA:
+// Edita el número de data-compliance="XX" en su <article class="kpi-card">
+// dentro de index.html. El color y la barra de progreso se recalculan
+// solos al cargar la página — no hay que tocar nada más.
+//
+// CÓMO CAMBIAR LOS UMBRALES DE COLOR (verde/naranja/rojo):
+// Cambia los dos números de acá abajo (UMBRAL_EXITO / UMBRAL_ADVERTENCIA).
+// Afecta a las 5 tarjetas a la vez.
+// ===========================================================
 
 // Umbrales de cumplimiento
 const UMBRAL_EXITO = 80;      // >= 80%  -> verde

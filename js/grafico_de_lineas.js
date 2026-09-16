@@ -321,17 +321,53 @@ function calcularCumplimientoSemana(valor, meta, config) {
 }
 
 // Convierte un número 0-100(+) en uno de los 3 colores del dashboard.
-// Se usa en varios lugares: el color de cada barra individual del modo
-// "% Cumplimiento", Y el color del número grande final de ambos modos
-// (ver config.resultado.colorValor / config.cumplimiento.colorValor en
-// cada kpiXData más arriba).
+// Se usa en varios lugares: el color de cada punto/línea individual del
+// modo "% Cumplimiento", Y el color del número grande final de ambos
+// modos (ver config.resultado.colorValor / config.cumplimiento.colorValor
+// en cada kpiXData más arriba).
+//
+// ⚠️ OJO: esta función SOLO controla los colores del gráfico de líneas
+// grande (Resultado / % Cumplimiento). Las 5 tarjetas KPI de arriba
+// (las que giran al hacer clic/hover) tienen su PROPIO sistema de color,
+// independiente de este — ver UMBRAL_EXITO/UMBRAL_ADVERTENCIA en KPI.js.
+//
+// CÓMO CAMBIAR EL COLOR DE UN KPI ACÁ:
+// Edita el número "colorValor" de su resultado/cumplimiento más arriba
+// (ej. kpi1Data.resultado.colorValor). No tiene que coincidir con el
+// texto mostrado — es solo la "nota" que decide el color.
+//
+// CÓMO CAMBIAR LOS UMBRALES (80 / 50) DE ESTE GRÁFICO:
+// Cambia los números directamente acá abajo. Afecta a los 5 KPIs del
+// gráfico de líneas a la vez (no afecta a las tarjetas de arriba).
 function colorSegunPorcentaje(porcentaje) {
     if (porcentaje >= 80) return '#1e5c3a'; // Verde
     if (porcentaje >= 50) return '#eab308'; // Naranja
     return '#dc2626';                       // Rojo
 }
 
-function renderBarrasCumplimiento(cardId, config) {
+// ===========================================================================
+// MODO "% CUMPLIMIENTO": gráfico de LÍNEAS (igual estilo que "Resultado"),
+// con la meta (100%) siempre EXACTAMENTE AL CENTRO de cada tarjeta
+// ===========================================================================
+// A diferencia del modo "Resultado" (donde la línea de meta va donde le
+// corresponda según los valores reales), acá la meta representa un valor
+// FIJO conceptual: 100% de cumplimiento. Por eso, en vez de calcular su
+// posición como una más, la ANCLAMOS al centro vertical del gráfico
+// (yCentro = mitad exacta del alto disponible) y luego calibramos la
+// escala de los puntos ALREDEDOR de ese centro:
+//   - Automático: la escala se recalcula CADA VEZ que se llama a esta
+//     función, a partir del cumplimiento real de esa semana — si cambias
+//     los datos de una semana, la próxima vez que se dibuje el gráfico
+//     (ej. al togglear entre modos) la calibración se ajusta sola.
+//   - Simétrico: si la semana con más desvío respecto al 100% se aleja,
+//     por ejemplo, 30 puntos porcentuales (70% o 130%), esos 30 puntos
+//     ocupan la misma distancia vertical hacia arriba que hacia abajo.
+//     Así, cualquier semana >= 100% cae SIEMPRE por encima de la línea
+//     de meta, y cualquier semana < 100% cae SIEMPRE por debajo — nunca
+//     al revés, sin importar los valores.
+// ===========================================================================
+
+function renderLineaCumplimiento(cardId, config) {
     const card = document.getElementById(cardId);
     if (!card) return;
 
@@ -340,20 +376,13 @@ function renderBarrasCumplimiento(cardId, config) {
     card.querySelector('[data-field="title"]').textContent = title;
     card.querySelector('[data-field="subtitle"]').textContent = subtitle;
 
-    // Cumplimiento de cada semana (array paralelo a "weeks"). Esto SÍ se
-    // sigue calculando: es lo que decide la altura y el color de CADA
-    // barra individual (eso no cambió).
-    const cumplimientos = weeks.map(w => calcularCumplimientoSemana(w.value, goal, config));
-
-    // ===========================================================
-    // NÚMERO GRANDE FINAL (modo "% Cumplimiento") — 100% manual.
-    // Ya NO es el promedio de las barras: se lee directo de
-    // config.cumplimiento.texto / config.cumplimiento.colorValor
-    // (ver la explicación completa en renderKPI, arriba en este archivo).
-    // ===========================================================
+    // El número grande final y su color siguen siendo 100% manuales
+    // (ver config.cumplimiento.texto/colorValor — misma lógica que
+    // renderKPI usa para el modo "Resultado", explicada más arriba).
+    const color = colorSegunPorcentaje(config.cumplimiento.colorValor);
     const avgEl = card.querySelector('[data-field="avg"]');
     avgEl.textContent = config.cumplimiento.texto;
-    avgEl.style.color = colorSegunPorcentaje(config.cumplimiento.colorValor);
+    avgEl.style.color = color;
 
     const svg = card.querySelector('.svg-grafico-linea');
     const tooltip = card.querySelector('.tooltip-grafico-linea');
@@ -362,90 +391,92 @@ function renderBarrasCumplimiento(cardId, config) {
 
     svg.innerHTML = ''; // Limpia lo que haya dibujado el modo "Resultado"
 
-    // Mismo viewBox adaptado que usa renderKPI (ver calcularViewBoxAdaptado
-    // arriba en este archivo) — mantiene la proporción del "rx" (esquinas
-    // redondeadas de las barras) consistente en cualquier tamaño de pantalla.
-    const { width, height, padX, padY } = calcularViewBoxAdaptado(svg);
+    // Mismo viewBox adaptado al tamaño real que usa renderKPI (evita que
+    // los puntos se deformen en pantallas con proporciones distintas).
+    const { width, height, padX, padY, scale } = calcularViewBoxAdaptado(svg);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
     const drawW = width - padX * 2;
     const drawH = height - padY * 2;
 
-    // Escala de 0% a 100% ÚNICAMENTE (a pedido: la altura máxima de
-    // cualquier barra es el 100%, incluso si el % real es mayor —
-    // ej. 113% se dibuja con la misma altura que 100%). El tooltip
-    // siempre muestra el % REAL sin recortar, aunque la barra visualmente
-    // se "tope" ahí. Ya NO se dibuja ninguna línea de meta/referencia.
-    const escalaMax = 100;
-    const yFor = (pct) => padY + drawH - (Math.min(pct, escalaMax) / escalaMax) * drawH;
-    const yBase = padY + drawH; // "piso" del gráfico = 0% de cumplimiento
+    // % de cumplimiento de cada semana (misma función que usaba el modo
+    // de barras — el CÁLCULO del cumplimiento no cambió, solo cómo se dibuja).
+    const cumplimientos = weeks.map(w => calcularCumplimientoSemana(w.value, goal, config));
 
-    // Ancho de cada "columna" según cuántas semanas haya (se adapta solo
-    // si agregas o quitas semanas del array "weeks" de cada KPI)
-    const numBarras = weeks.length;
-    const espacioEntreBarras = 6;
-    const anchoColumna = (drawW - espacioEntreBarras * (numBarras - 1)) / numBarras;
+    // --- AQUÍ ESTÁ LA CALIBRACIÓN AUTOMÁTICA ---
+    // yCentro: el 100% SIEMPRE va exactamente a la mitad del alto disponible.
+    const yCentro = padY + drawH / 2;
 
-    // La barra VISIBLE es más angosta que su columna (a pedido: "líneas
-    // más delgadas"). FACTOR_GROSOR_BARRA controla qué tan delgada se ve:
-    // 1.0 = ocupa toda la columna (como antes) | 0.5 = la mitad, centrada.
-    // Ajusta este único número si quieres barras más gruesas o más finas.
-    const FACTOR_GROSOR_BARRA = 0.5;
-    const anchoBarraVisible = anchoColumna * FACTOR_GROSOR_BARRA;
+    // Cuánto se aleja del 100% la semana MÁS extrema (en cualquier
+    // dirección). Un mínimo de 10 evita una escala absurdamente
+    // "amplificada" cuando todas las semanas están casi en el 100%.
+    const desvioMaximo = Math.max(...cumplimientos.map(c => Math.abs(c - 100)), 10);
+
+    // Buffer del 30% extra para que el punto más extremo no quede pegado
+    // al borde superior/inferior de la tarjeta.
+    const escalaDesvio = desvioMaximo * 1.3;
+
+    // A más cumplimiento, MENOR "y" (más arriba en pantalla) — por eso se
+    // resta. Con esto, >=100% cae arriba de yCentro y <100% cae debajo,
+    // siempre, automáticamente.
+    const yFor = (c) => yCentro - ((c - 100) / escalaDesvio) * (drawH / 2);
+
+    // Línea de meta: SIEMPRE al centro exacto (ya no se calcula con yFor,
+    // porque conceptualmente el 100% ESTÁ definido como el centro mismo).
+    const goalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    goalLine.setAttribute('x1', padX);
+    goalLine.setAttribute('y1', yCentro);
+    goalLine.setAttribute('x2', width - padX);
+    goalLine.setAttribute('y2', yCentro);
+    goalLine.setAttribute('stroke', '#111');
+    goalLine.setAttribute('stroke-width', '1');
+    goalLine.setAttribute('stroke-dasharray', '4 3');
+    goalLine.setAttribute('opacity', '0.7');
+    svg.appendChild(goalLine);
+
+    const xFor = (i) => padX + (i / (weeks.length - 1)) * drawW;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const d = cumplimientos.map((c, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i).toFixed(2)} ${yFor(c).toFixed(2)}`).join(' ');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('stroke-linejoin', 'round');
+    path.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(path);
+
+    // Mismo radio "adaptado" que el modo Resultado: ~4px reales siempre,
+    // sin importar el tamaño de pantalla (ver calcularViewBoxAdaptado).
+    const RADIO_PUNTO_PX = 4;
+    const radioPunto = RADIO_PUNTO_PX / scale;
 
     weeks.forEach((w, i) => {
       const cumplimiento = cumplimientos[i];
-      const colorBarra = colorSegunPorcentaje(cumplimiento);
+      const cx = xFor(i);
+      const cy = yFor(cumplimiento);
 
-      const xColumna = padX + i * (anchoColumna + espacioEntreBarras);
-      const xBarraVisible = xColumna + (anchoColumna - anchoBarraVisible) / 2; // centrada en su columna
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      group.setAttribute('class', 'grupo-puntos-grafico-linea');
 
-      const yTop = yFor(cumplimiento);
-      const alturaBarra = Math.max(yBase - yTop, 1); // mínimo 1px para que siempre se vea algo
+      const core = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      core.setAttribute('cx', cx);
+      core.setAttribute('cy', cy);
+      core.setAttribute('r', radioPunto);
+      core.setAttribute('class', 'punto-nucleo-grafico-linea');
+      core.setAttribute('fill', color);
+      group.appendChild(core);
 
-      // --- Barra visible (delgada, centrada en su columna) ---
-      const barraVisible = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      barraVisible.setAttribute('x', xBarraVisible);
-      barraVisible.setAttribute('y', yTop);
-      barraVisible.setAttribute('width', anchoBarraVisible);
-      barraVisible.setAttribute('height', alturaBarra);
-      barraVisible.setAttribute('rx', 1.5);
-      barraVisible.setAttribute('fill', colorBarra);
-      barraVisible.setAttribute('class', 'barra-cumplimiento-grafico-linea');
-      barraVisible.style.pointerEvents = 'none'; // el hover lo maneja el "área de detección" de abajo
-
-      // --- Área de detección invisible: ocupa TODA la columna y TODO el
-      // alto del gráfico (no solo el pedacito de la barra visible). Esto
-      // es lo que soluciona que "a veces no se vea nada de información"
-      // al pasar el mouse — antes, si una barra era muy bajita (ej. 0%
-      // de cumplimiento), el área para activar el tooltip era casi del
-      // tamaño de 1px y era casi imposible acertarle con el mouse. ---
-      const areaDeteccion = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      areaDeteccion.setAttribute('x', xColumna);
-      areaDeteccion.setAttribute('y', padY);
-      areaDeteccion.setAttribute('width', anchoColumna);
-      areaDeteccion.setAttribute('height', drawH);
-      areaDeteccion.setAttribute('fill', 'transparent'); // invisible, pero SÍ recibe el mouse
-      areaDeteccion.setAttribute('class', 'area-deteccion-grafico-linea'); // le da el cursor:pointer
-
-      const cx = xColumna + anchoColumna / 2;
-      const cy = yTop;
-
-      areaDeteccion.addEventListener('mouseenter', () => {
+      group.addEventListener('mouseenter', () => {
         tWeek.textContent = w.week;
         tValue.textContent = `${Math.round(cumplimiento)}% de cumplimiento`;
         tooltip.style.opacity = '1';
         positionTooltip(cx, cy);
-        barraVisible.style.opacity = '0.8'; // mismo efecto visual que antes al pasar el mouse
       });
-      areaDeteccion.addEventListener('mousemove', () => positionTooltip(cx, cy));
-      areaDeteccion.addEventListener('mouseleave', () => {
-        tooltip.style.opacity = '0';
-        barraVisible.style.opacity = '1';
-      });
+      group.addEventListener('mousemove', () => positionTooltip(cx, cy));
+      group.addEventListener('mouseleave', () => { tooltip.style.opacity = '0'; });
 
-      svg.appendChild(barraVisible);
-      svg.appendChild(areaDeteccion);
+      svg.appendChild(group);
     });
 
     function positionTooltip(cx, cy) {
@@ -481,7 +512,7 @@ const CONFIGURACION_KPIS_GRAFICO_LINEA = [
 function renderTodosLosKPIs(modo) {
   CONFIGURACION_KPIS_GRAFICO_LINEA.forEach(({ id, data }) => {
     if (modo === 'cumplimiento') {
-      renderBarrasCumplimiento(id, data);
+      renderLineaCumplimiento(id, data);
     } else {
       renderKPI(id, data);
     }
@@ -505,6 +536,7 @@ function inicializarToggleModoVisualizacion() {
   });
 }
 
-// --- Arranque inicial: se dibuja en modo "resultado" (el de siempre) ---
-renderTodosLosKPIs('resultado');
+// --- Arranque inicial: se dibuja en modo "cumplimiento" (ahora es el
+//     modo por defecto al cargar la página, ver el toggle en index.html) ---
+renderTodosLosKPIs('cumplimiento');
 inicializarToggleModoVisualizacion();
