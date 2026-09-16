@@ -16,10 +16,13 @@
    =========================================================== */
 .kpi-card {
     perspective: 1200px; /* Profundidad del giro 3D */
+    cursor: pointer; /* Ahora la tarjeta también se voltea con un tap/click (ver KPI.js) */
     /* clamp(mínimo, preferido, máximo): en pantallas bajas se achica un
        poco solo (hasta 90px) y en pantallas altas crece un poco (hasta
        150px), en vez de quedar siempre fija en 135px. Esto ayuda a que
-       el layout completo quepa sin scroll en más tamaños de pantalla. */
+       el layout completo quepa sin scroll en más tamaños de pantalla.
+       También funciona bien en celular (ver KPI.js/styles.css para el
+       resto del comportamiento responsive). */
     height: clamp(90px, 14vh, 150px);
 }
 
@@ -31,8 +34,15 @@
     transform-style: preserve-3d;
 }
 
-/* Al pasar el mouse, gira la tarjeta */
-.kpi-card:hover .kpi-card-inner {
+/* Al pasar el mouse, gira la tarjeta.
+   En celular no existe "hover" real (el dedo no se queda flotando sobre
+   la pantalla), así que también se puede voltear con un TAP: ver
+   KPI.js -> inicializarFlipTactil(), que agrega/quita la clase
+   "is-flipped" al tocar la tarjeta. Funciona en cualquier dispositivo,
+   no solo en celular (en escritorio simplemente es un click extra que
+   hace lo mismo que el hover). */
+.kpi-card:hover .kpi-card-inner,
+.kpi-card.is-flipped .kpi-card-inner {
     transform: rotateY(180deg);
 }
 
@@ -46,11 +56,6 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     padding: 10px 14px;
 }
-
-/*.kpi-card-front {
-    display: flex;
-    flex-direction: column;
-}*/
 
 .kpi-card-front {
     display: grid;
@@ -92,25 +97,6 @@
    Ícono
    =========================================================== */
 
-/*   
-.kpi-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background-color: #017d03;
-    color: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-}
-
-.kpi-icon svg {
-    width: 18px;
-    height: 18px;
-}
-*/
-
 .kpi-icon {
     grid-area: icon;
     width: 26px;
@@ -132,30 +118,6 @@
 /* ===========================================================
    Encabezado / valor / meta
    =========================================================== */
-
-/*   
-.kpi-header h3 {
-    font-size: 12px;
-    font-weight: 700;
-    color: #3C4043;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    margin-bottom: 0.3rem;
-}
-
-.kpi-value {
-    font-size: 50px;
-    font-weight: 800;
-    color: #202124;
-    line-height: 1.2;
-}
-
-.kpi-meta {
-    font-size: 12px;
-    color: #80868B;
-    margin-bottom: 0.5rem;
-}
-*/
 
 .kpi-header {
     grid-area: header;
@@ -198,16 +160,6 @@
    El ancho y color los define el JS según data-compliance
    =========================================================== */
 
-/*
-.kpi-progress {
-    width: 100%;
-    height: 5px;
-    background-color: #E8EAED;
-    border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 0.6rem;
-}*/
-
 .kpi-progress {
     grid-area: progress;
     width: 100%;
@@ -232,14 +184,6 @@
    Footer: % de cumplimiento + variación
    =========================================================== */
 
-/*
-.kpi-footer {
-    margin-top: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-*/
 
 .kpi-footer {
     grid-area: footer;
@@ -247,32 +191,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-width: 0; /* para que pueda encogerse en tarjetas angostas (celular) en vez de empujar el ancho de la página */
 }
 
 .kpi-compliance {
     display: flex;
     flex-direction: column;
     line-height: 1.2;
+    min-width: 0; /* mismo motivo: por defecto un hijo flex no se encoge más allá de su contenido */
+    overflow: hidden; /* si el texto aun así no entra, se recorta limpio en vez de desbordar */
 }
 
-/*
-.kpi-compliance strong {
-    font-size: 16px;
-}
-
-.kpi-compliance span {
-    font-size: 11px;
-    color: #80868B;
-}
-
-.kpi-variation {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 8px;
-    white-space: nowrap;
-}
-*/
 
 .kpi-compliance strong {
     font-size: 12px;
@@ -328,27 +257,69 @@
    =========================================================== */
 
 /* Éxito: cumplimiento alto */
-.kpi-card.status-success .kpi-compliance strong { color: #017d03; }
+
+.kpi-card.status-success .kpi-compliance strong,
+.kpi-card.status-success .kpi-value { color: #017d03; } /* Aquí vinculamos el número grande */
 .kpi-card.status-success .kpi-progress-bar { background-color: #34A853; }
 .kpi-card.status-success .kpi-variation {
     background-color: #E6F4EA;
     color: #1E8E3E;
 }
 
+
 /* Advertencia: cumplimiento medio */
-.kpi-card.status-warning .kpi-compliance strong { color: #B06000; }
+
+.kpi-card.status-warning .kpi-compliance strong,
+.kpi-card.status-warning .kpi-value { color:#F9A825; } /* Aquí vinculamos el número grande */
 .kpi-card.status-warning .kpi-progress-bar { background-color: #F9A825; }
 .kpi-card.status-warning .kpi-variation {
     background-color: #FEF3E0;
     color: #B06000;
 }
 
+
 /* Peligro: cumplimiento bajo */
-.kpi-card.status-danger .kpi-compliance strong { color: #C5221F; }
+
+.kpi-card.status-danger .kpi-compliance strong,
+.kpi-card.status-danger .kpi-value { color: #C5221F; } /* Aquí vinculamos el número grande */
 .kpi-card.status-danger .kpi-progress-bar { background-color: #EA4335; }
 .kpi-card.status-danger .kpi-variation {
     background-color: #FCE8E6;
     color: #C5221F;
+}
+
+/* ===========================================================================
+   MODO CELULAR (max-width: 768px) — mismo punto de quiebre que styles.css
+   ===========================================================================
+   BUG QUE ESTO ARREGLA: en celular, .kpis-container pasa a mostrar las
+   tarjetas de a 2 por fila (en vez de 5 en una fila como en escritorio).
+   Con menos ancho disponible por tarjeta, títulos largos como
+   "EFICIENCIA DE INVERSIÓN" envuelven a 2 líneas — pero la altura de la
+   tarjeta (clamp(90px, 14vh, 150px), pensada para el modo "sin scroll"
+   de escritorio) no tenía espacio de sobra para esa línea extra, y el
+   texto "Meta: ..." terminaba saliéndose por debajo del borde redondeado
+   de la tarjeta.
+
+   La solución: en celular SÍ se permite scroll, así que no hace falta
+   ahorrar espacio vertical — le damos a la tarjeta una altura fija y
+   generosa que garantiza que todo el contenido quepa cómodo, más
+   overflow:hidden como respaldo (si un título fuera extremadamente
+   largo, se recorta limpio en vez de desbordar visualmente sobre el
+   fondo de la página, que se ve mucho peor).
+   =========================================================================== */
+@media (max-width: 768px) {
+    .kpi-card {
+        height: 195px; /* generosa a propósito: mejor "de sobra" que "justa" */
+    }
+
+    .kpi-card-face {
+        overflow: hidden; /* red de seguridad: si algo aun así no entra, se recorta limpio */
+    }
+
+    /* Un poco más de aire entre el título y la meta, ahora que hay espacio */
+    .kpi-header h3 {
+        font-size: 12px;
+    }
 }
 
 

@@ -1,20 +1,38 @@
 /* Estilos principales del botón */
+
+/*
 .dropdown-btn {
     background-color: #FFFFFF;
     border: none;
-    border-radius: 10px; /* Bordes redondeados */
+    border-radius: 10px; 
     padding: 10px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 150px;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
     transition: background-color 0.2s ease, transform 0.1s ease;
     margin: 0px 4px;
 }
+*/
 
-        /* Efecto al pasar el cursor (Hover) */
+.dropdown-btn {
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 10px; 
+    padding: 6px 10px; /* Reducido (antes 10px 14px) */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 120px; /* Reducido (antes 150px) para ocupar menos a lo ancho */
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin: 0px 2px; /* Ligeramente más juntos */
+}
+
+/* Efecto al pasar el cursor (Hover) */
 .dropdown-btn:hover {
     background-color: #F9FAFB;
 }
@@ -25,25 +43,54 @@
 }
 
 /* Contenedor de los textos para apilarlos verticalmente */
+
+/*
 .text-container {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px; /* Espacio entre el título y el valor */
+    gap: 4px;
+}
+*/
+
+.text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px; /* Espacio mínimo entre el título y el valor */
 }
 
 /* Estilo para "Tipo de control" */
+
+/*
 .label {
     font-size: 13px;
-    font-weight: 700; /* Negrita */
-    color: #202124; /* Gris muy oscuro/negro */
+    font-weight: 700; 
+    color: #202124; 
+}
+*/
+
+.label {
+    font-size: 11px; /* Letra achicada (antes 13px) */
+    font-weight: 700; 
+    color: #202124; 
 }
 
+
 /* Estilo para "Todos" */
+
+/*
 .value {
     font-size: 14px;
     font-weight: 500;
-    color: #80868B; /* Gris claro */
+    color: #80868B; 
+}
+*/
+
+.value {
+    font-size: 12px; /* Letra achicada (antes 14px) */
+    font-weight: 500;
+    color: #80868B; 
 }
 
 /* Contenedor del ícono */
@@ -92,6 +139,7 @@
     transform: translateY(0);
 }
 
+/*
 .dropdown-item {
     padding: 10px 14px;
     font-size: 14px;
@@ -99,7 +147,44 @@
     cursor: pointer;
     transition: background-color 0.1s;
 }
+*/
+
+.dropdown-item {
+    padding: 8px 10px; /* Elementos del menú más compactos */
+    font-size: 12px; /* Letra más pequeña en las opciones */
+    color: #202124;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
 
 .dropdown-item:hover {
     background-color: #F1F3F4; /* Fondo gris claro al pasar el cursor */
+}
+
+/* ===========================================================================
+   MODO CELULAR (max-width: 768px) — mismo punto de quiebre que styles.css
+   ===========================================================================
+   BUG QUE ESTO ARREGLA: el hijo flex directo de .contenedor-botones-filtros
+   (el que realmente controla el "envuelve de a 2 por fila") es
+   .dropdown-wrapper, NO .dropdown-btn — el botón vive ADENTRO del wrapper.
+   La primera versión de este fix le puso el ancho "50%" al botón, pero
+   un porcentaje se calcula respecto al PADRE del elemento (el wrapper) —
+   y como el wrapper no tenía ningún ancho propio definido, ese 50% no
+   tenía "50% de qué", y el navegador lo ignoraba (el botón colapsaba a
+   su ancho mínimo de contenido, partiendo el texto en varias líneas).
+
+   La corrección: el ancho de la cuadrícula va en .dropdown-wrapper (el
+   hijo flex real), y el botón de adentro simplemente llena su wrapper
+   al 100%.
+   =========================================================================== */
+@media (max-width: 768px) {
+    .dropdown-wrapper {
+        width: calc(50% - 0.5rem); /* 2 por fila, descontando la mitad del gap de 1rem */
+    }
+
+    .dropdown-btn {
+        width: 100%;   /* llena el ancho de su wrapper (ya correctamente calculado arriba) */
+        margin: 0;      /* el espaciado ahora lo da el gap del contenedor, no el margin individual */
+    }
 }

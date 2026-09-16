@@ -79,7 +79,21 @@
         .area-grafico-linea {
             flex: 1;
             position: relative;
-            height: auto;   /* antes: 32px fijo. Ahora se estira con .tarjeta-kpi-grafico-linea */
+            /* CAMBIO CLAVE (arregla el bug de los gráficos deformados):
+               antes esto era "height: auto", lo cual crea una referencia
+               CIRCULAR: el alto de esta caja dependía del <svg> de adentro
+               (que mide height:100% de ESTA caja), y a la vez nuestro JS
+               mide el <svg> para decidir la proporción del gráfico. Medir
+               algo cuyo tamaño depende de lo que se está por dibujar da
+               resultados basura la primera vez que corre.
+
+               Con height:100%, esta caja mide el alto de su fila
+               (.tarjeta-kpi-grafico-linea), que en escritorio SÍ es un
+               alto ya definido de antemano por flexbox (viene de la
+               cadena de "layout sin scroll" de styles.css, no depende de
+               ningún contenido) — así el JS puede medir un valor real y
+               estable, sin depender circularmente del propio SVG. */
+            height: 100%;
             min-height: 0;
             min-width: 0;
         }
@@ -147,21 +161,51 @@
             r: 6; /* Tamaño aumentado en el hover para que destaquen al interactuar */
         }
 
-        @media (max-width: 720px) {
+        /* ===========================================================================
+           MODO CELULAR (max-width: 768px) — mismo punto de quiebre que styles.css
+           ===========================================================================
+           En escritorio/TV, .tablero-grafico-linea y cada
+           .tarjeta-kpi-grafico-linea reparten un alto EXACTO entre las 5
+           filas (ver flex:1 1 auto / flex:1 1 0 más arriba), porque ahí
+           la página no puede scrollear y hay que aprovechar justo el
+           espacio disponible.
+
+           En celular eso ya no aplica: la página puede crecer y
+           scrollear, así que cada fila simplemente mide lo que su
+           contenido necesite (flex: none), apiladas una debajo de otra.
+           =========================================================================== */
+        @media (max-width: 768px) {
+            .tablero-grafico-linea {
+                flex: none;      /* ya no reparte un alto exacto entre filas */
+                min-height: 0;
+            }
+
             .tarjeta-kpi-grafico-linea {
-                flex-wrap: wrap;
+                flex: none;      /* cada fila mide lo que necesite, no 1/5 exacto */
+                min-height: 0;
+                flex-wrap: wrap; /* logo+título arriba, gráfico abajo (ver reglas siguientes) */
                 padding: 16px;
                 gap: 12px;
             }
+
             .encabezado-kpi-grafico-linea {
                 width: auto;
                 min-width: auto;
             }
+
             .area-grafico-linea {
                 order: 3;
                 width: 100%;
                 flex: 1 1 100%;
+                /* En escritorio esta altura es "auto" porque se estira para
+                   llenar el espacio sobrante (ver más arriba). En celular no
+                   hay "espacio sobrante" que repartir (la página crece con
+                   scroll), así que acá SÍ necesita una altura fija y
+                   razonable, o el gráfico se vería con 0px de alto. */
+                height: 110px;
+                min-height: 110px;
             }
+
             .promedio-kpi-grafico-linea {
                 font-size: 24px;
                 width: auto;

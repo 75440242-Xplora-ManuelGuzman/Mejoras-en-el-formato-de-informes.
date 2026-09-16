@@ -108,3 +108,59 @@
     background-color: #017d03;
     transform: scale(1.2);
 }
+
+/* ===========================================================================
+   MODO CELULAR (max-width: 768px) — mismo punto de quiebre que styles.css
+   ===========================================================================
+   BUG QUE ESTO ARREGLA: antes, en celular, .carousel seguía siendo una
+   fila (flecha | imagen | flecha) con las 2 flechas ocupando 40px cada
+   una. En una pantalla angosta eso le dejaba MUY poco ancho a la imagen
+   (ej. en un celular de 375px de ancho, quedaban ~270px para la foto),
+   y con una altura FIJA de 220px desconectada de ese ancho tan angosto,
+   el resultado era una caja rarísima (muy alta para lo angosta que era)
+   donde object-fit:cover recortaba la foto de forma exageradamente
+   "zoomeada" — además de que las flechas, apretadas a los costados,
+   se veían flotando y desconectadas del resto.
+
+   LA SOLUCIÓN (patrón típico de carruseles en apps móviles):
+   1) Las flechas ya NO ocupan espacio a los costados: se SUPERPONEN
+      encima de la foto (position:absolute), así la imagen usa el 100%
+      del ancho disponible.
+   2) En vez de una altura fija en píxeles, usamos "aspect-ratio": la
+      altura se calcula proporcionalmente al ancho real que termine
+      teniendo el carrusel, así el recorte de la foto se ve siempre
+      bien proporcionado sin importar el ancho de pantalla.
+   =========================================================================== */
+@media (max-width: 768px) {
+    .carousel {
+        display: block; /* ya no es una fila de 3 columnas (flecha|imagen|flecha) */
+        /* position:relative ya está definido más arriba (fuera de este
+           media query) y sigue aplicando — es lo que permite que las
+           flechas y los puntos se posicionen ENCIMA de la imagen */
+    }
+
+    .carousel-viewport {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3; /* proporción fija que se adapta al ancho real,
+                                 en vez de una altura en px desconectada de él */
+    }
+
+    .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 5; /* por encima de la imagen */
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.85); /* semi-transparente: se nota que "flota" sobre la foto */
+    }
+
+    .carousel-btn--prev {
+        left: 8px;
+    }
+
+    .carousel-btn--next {
+        right: 8px;
+    }
+}

@@ -250,3 +250,15 @@
 
 .insight-detail-content[data-tone="success"] .insight-detail-icon { background-color: #1E8E3E; }
 .insight-detail-content[data-tone="success"] .insight-detail-stats { color: #1E8E3E; }
+
+/* ===========================================================================
+   MODO CELULAR (max-width: 768px) — mismo punto de quiebre que styles.css
+   ===========================================================================
+   Los botones de flecha (prev/next) crecen un poco: 32px es un objetivo
+   táctil algo chico para un dedo (lo recomendado suele ser ~40-44px). */
+@media (max-width: 768px) {
+    .insight-nav-btn {
+        width: 40px;
+        height: 40px;
+    }
+}

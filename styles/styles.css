@@ -7,8 +7,13 @@
 /* ===========================================================================
    LAYOUT "SIN SCROLL" — LÉEME ANTES DE TOCAR ESTA SECCIÓN
    ===========================================================================
-   Requisito del proyecto: la página NUNCA debe generar scroll, ni vertical
-   ni horizontal. La estrategia es:
+   Requisito del proyecto: en PANTALLAS NORMALES (computadora, TV) la página
+   NUNCA debe generar scroll, ni vertical ni horizontal. En CELULAR sí se
+   permite scroll vertical (ver el bloque "MODO CELULAR" al final de este
+   archivo, y su equivalente en KPI.css, grafico_de_lineas.css y
+   Carousel.css — TODOS usan el mismo punto de quiebre: 768px de ancho).
+
+   La estrategia para escritorio/TV es:
 
    1) <html> y <body> miden EXACTAMENTE el alto de la ventana (100vh) y tienen
       overflow: hidden. Esto es lo que garantiza al 100% que jamás aparezca
@@ -28,13 +33,19 @@
       de evidencias "se estiren" para ocupar el espacio sobrante en vez
       de tener una altura fija en píxeles).
 
-   ¿CÓMO AJUSTAR SI ALGO SE VE MUY APRETADO EN UNA PANTALLA CHICA?
+   ¿CÓMO AJUSTAR SI ALGO SE VE MUY APRETADO EN UNA PANTALLA CHICA (DE
+   ESCRITORIO, no celular)?
    - Reduce el alto de las KPI cards: buscar ".kpi-card" en KPI.css
      (usa clamp(), así que ya se adapta un poco solo).
    - Reduce el padding de .main-header más abajo en este archivo.
    - Si necesitas MÁS margen de maniobra, puedes bajar el "min-height: 0"
      de algún contenedor flex-child, pero cuidado: quitar min-height:0
      puede hacer que ese contenedor vuelva a desbordar.
+
+   ¿Y EN CELULAR? Ahí NO aplica nada de "sin scroll": todo este esquema de
+   alturas fijas/repartidas se DESACTIVA por completo abajo de 768px de
+   ancho (ver "MODO CELULAR" al final del archivo) y la página vuelve a
+   comportarse como una página normal que crece hacia abajo y se scrollea.
    =========================================================================== */
 
 html, body {
@@ -65,14 +76,26 @@ body, button, input, select, textarea {
     font-family: 'Poppins', Arial, sans-serif;
 }
 
+/*
 .main-header {
   display: flex;
   justify-content: space-between;
   background-color: #0A703D;
   padding: 0.5rem;
   color: #fff;
-  flex-shrink: 0; /* Piso fijo: nunca se achica, sin importar cuánto midan los demás */
+  flex-shrink: 0; 
 }
+*/
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  background-color: #0A703D;
+  padding: 0.2rem 0.5rem; /* Reducido verticalmente para achicar la franja */
+  color: #fff;
+  flex-shrink: 0; 
+}
+
 
 .contenedor-logo-texto {
   display: flex;
@@ -207,8 +230,17 @@ main {
   color: #80868B;
 }
 
+/*
 .contenedor-logo, .contenedor-texto {
   padding: 0rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+  */
+
+.contenedor-logo, .contenedor-texto {
+  padding: 0rem 0.8rem; /* Reducido ligeramente el espacio a los lados */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -219,13 +251,154 @@ main {
   border-left: 1px solid rgba(255, 255, 255, 0.4);
 }
 
+/*
 .contenedor-texto h1 {
   font-size: 25px;
   font-family: Arial, sans-serif;
   font-weight: bold;
 }
+*/
 
+.contenedor-texto h1 {
+  font-size: 20px; /* Reducido (antes 25px) */
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+/*
 .logo-primor {
     max-width: 80px;
     height: auto;
+}
+*/
+
+.logo-primor {
+    max-width: 65px; /* Achicado (antes 80px) */
+    height: auto;
+}
+
+
+/* ===========================================================================
+   MODO CELULAR (max-width: 768px)
+   ===========================================================================
+   Punto de quiebre único usado en TODOS los archivos CSS del proyecto
+   (styles.css, botones.css, KPI.css, grafico_de_lineas.css, Carousel.css).
+   Si algún día quieres cambiar dónde empieza el "modo celular", cambia
+   este número EN LOS 5 ARCHIVOS por igual.
+
+   Qué hace este bloque, en resumen: DESACTIVA todo el esquema de "alturas
+   repartidas / sin scroll" de arriba y deja que la página se comporte de
+   forma normal (crece hacia abajo, el navegador scrollea solo). Cada
+   sección pasa a apilarse una debajo de otra en vez de repartirse el
+   ancho/alto de la pantalla.
+   =========================================================================== */
+@media (max-width: 768px) {
+
+    /* 1) Le devolvemos a la página su comportamiento normal de scroll
+          VERTICAL — pero bloqueamos el HORIZONTAL explícitamente.
+          Por qué: con overflow:visible, CUALQUIER elemento que se pase
+          por apenas unos píxeles del ancho de pantalla (a veces de forma
+          casi invisible — un ícono, un texto muy largo sin wrap, un
+          redondeo de píxeles en un cálculo con calc()) hace que el
+          navegador agregue una barra de scroll horizontal para TODA la
+          página, con ese espacio en blanco extra tan feo. En celular el
+          scroll horizontal NUNCA es deseable (a diferencia del vertical,
+          que sí pediste permitir), así que lo bloqueamos de raíz acá,
+          en vez de perseguir cada posible elemento causante uno por uno. */
+    html, body {
+        height: auto;        /* ya no fijamos el alto exacto de la ventana */
+        overflow-y: visible; /* el scroll VERTICAL sí se permite */
+        overflow-x: hidden;  /* el scroll HORIZONTAL se bloquea siempre */
+    }
+
+    /* 2) <main> deja de repartirse un alto exacto y de forzar 2 columnas:
+          ahora es 1 sola columna, y left-panel/right-panel se apilan
+          verticalmente (primero el gráfico, después las evidencias) */
+    main {
+        grid-template-columns: 1fr;
+        flex: none;
+        min-height: 0;
+        overflow: visible;
+        padding: 0 0.6rem 1rem;
+        gap: 0.8rem;
+    }
+
+    /* 3) Los paneles ya no necesitan medir "el 100% del alto disponible":
+          cada uno mide lo que su contenido necesite */
+    .left-panel {
+        height: auto;
+        min-height: 0;
+        padding: 0.8rem;
+    }
+
+    .right-panel {
+        height: auto;
+        min-height: 0;
+    }
+
+    .evidence-section {
+        flex: none;
+        padding: 0.8rem;
+    }
+
+    /* 4) Header: en pantallas angostas no caben el título y los 4 filtros
+          en una sola fila, así que el header pasa a 2 filas: arriba el
+          logo+título, abajo los filtros. */
+
+    /*
+    .main-header {
+        flex-wrap: wrap;
+        row-gap: 0.6rem;
+    }
+    */
+    
+    .main-header {
+        flex-wrap: wrap;
+        row-gap: 0.4rem; /* Reducido el espacio entre filas */
+    }
+
+    /* Los filtros se acomodan en una cuadrícula de 2 columnas x 2 filas
+       (envuelven naturalmente), en vez de salirse de la pantalla o
+       convertirse en una franja con scroll horizontal.
+       IMPORTANTE: antes esto usaba "overflow-x: auto" para lograr un
+       scroll horizontal, pero eso causaba un bug feo: cuando defines
+       overflow-x sin definir también overflow-y, el navegador activa
+       overflow-y:auto SOLO, generando un scroll vertical no deseado
+       dentro de la franja (con espacios en blanco). Por eso ahora no
+       usamos overflow en absoluto — usamos flex-wrap para que los
+       botones simplemente pasen a una 2da fila. */
+    
+    /*
+    .contenedor-botones-filtros {
+        width: 100%;
+        flex-wrap: wrap;   
+        row-gap: 0.6rem;
+    }
+   
+    .contenedor-texto h1 {
+        font-size: 18px;
+    }
+
+    .logo-primor {
+        max-width: 60px;
+    }
+    */
+
+    .contenedor-botones-filtros {
+        width: 100%;
+        flex-wrap: wrap;   
+        row-gap: 0.4rem; /* Reducido el espacio entre botones apilados */
+    }
+
+    .contenedor-texto h1 {
+        font-size: 16px; /* Aún más pequeño en celular */
+    }
+
+    .logo-primor {
+        max-width: 50px; /* Logo más pequeño en celular */
+    }
+
+    .contenedor-logo, .contenedor-texto {
+        padding: 0 0.5rem;
+    }
 }
