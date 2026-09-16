@@ -1,0 +1,450 @@
+function renderKPI(cardId, config) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+
+    const { title, subtitle, goal, weeks, format } = config;
+
+    card.querySelector('[data-field="title"]').textContent = title;
+    card.querySelector('[data-field="subtitle"]').textContent = subtitle;
+
+    // ===========================================================
+    // NÚMERO GRANDE FINAL (modo "Resultado")
+    // ===========================================================
+    // Este número YA NO SE CALCULA (antes era un promedio de las 6
+    // semanas). Ahora es 100% manual: se escribe directamente en
+    // config.resultado.texto (puede ser cualquier texto: "113 TM",
+    // "18PP", "N/D", lo que sea).
+    //
+    // El COLOR sigue siendo automático (verde/naranja/rojo), pero ahora
+    // se basa en config.resultado.colorValor: un número del 0 al 100+
+    // que tú eliges para indicar "qué tan bien va" ese KPI. No tiene
+    // que coincidir con el texto — es solo la "nota" que decide el color.
+    // Umbrales (ver función colorSegunPorcentaje más abajo):
+    //   >= 80 -> verde   |   50-79 -> naranja   |   < 50 -> rojo
+    //
+    // ESTE MISMO COLOR también se usa para pintar la línea y los puntos
+    // del gráfico de abajo, así que sigue siendo un indicador visual
+    // fuerte, tal como antes.
+    // ===========================================================
+    const color = colorSegunPorcentaje(config.resultado.colorValor);
+
+    const avgEl = card.querySelector('[data-field="avg"]');
+    avgEl.textContent = config.resultado.texto;
+    avgEl.style.color = color;
+
+    const svg = card.querySelector('.svg-grafico-linea');
+    const tooltip = card.querySelector('.tooltip-grafico-linea');
+    const tWeek = tooltip.querySelector('.semana-grafico-linea');
+    const tValue = tooltip.querySelector('.valor-grafico-linea');
+
+    // Limpia cualquier dibujo previo (necesario porque esta función se puede
+    // volver a llamar al cambiar del modo "% Cumplimiento" de vuelta a "Resultado")
+    svg.innerHTML = '';
+
+    // AQUÍ ESTÁN LAS MODIFICACIONES CLAVE DEL JS PARA ACHICAR EL GRÁFICO
+    const width = 600;
+    const height = 32; // Reducido drásticamente para evitar el scroll
+
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+    const padX = 10; 
+    const padY = 4; 
+    const drawW = width - padX * 2;
+    const drawH = height - padY * 2;
+
+    const maxVal = Math.max(...weeks.map(w => w.value), goal);
+    const minVal = Math.min(...weeks.map(w => w.value), goal);
+    const range = Math.max(maxVal - minVal, 10);
+    const buffer = range * 0.35;
+    const scaleMin = minVal - buffer;
+    const scaleMax = maxVal + buffer;
+
+    const xFor = (i) => padX + (i / (weeks.length - 1)) * drawW;
+    const yFor = (v) => padY + drawH - ((v - scaleMin) / (scaleMax - scaleMin)) * drawH;
+    const yGoal = yFor(goal);
+
+    const goalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    goalLine.setAttribute('x1', padX);
+    goalLine.setAttribute('y1', yGoal);
+    goalLine.setAttribute('x2', width - padX);
+    goalLine.setAttribute('y2', yGoal);
+    goalLine.setAttribute('stroke', '#111');
+    goalLine.setAttribute('stroke-width', '1'); // Reducido de 1.2
+    goalLine.setAttribute('stroke-dasharray', '4 3');
+    goalLine.setAttribute('opacity', '0.7');
+    svg.appendChild(goalLine);
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const d = weeks.map((w, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i).toFixed(2)} ${yFor(w.value).toFixed(2)}`).join(' ');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', '1.5'); // Línea más delgada, reducida de 2
+    path.setAttribute('stroke-linejoin', 'round');
+    path.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(path);
+
+    weeks.forEach((w, i) => {
+      const cx = xFor(i);
+      const cy = yFor(w.value);
+
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      group.setAttribute('class', 'grupo-puntos-grafico-linea');
+
+      const core = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      core.setAttribute('cx', cx);
+      core.setAttribute('cy', cy);
+      core.setAttribute('r', 4.5); /* Radio aumentado de 2.5 a 4.5 para mayor visibilidad */
+      core.setAttribute('class', 'punto-nucleo-grafico-linea');
+      core.setAttribute('fill', color);
+
+      group.appendChild(core);
+
+      group.addEventListener('mouseenter', () => {
+        tWeek.textContent = w.week;
+        let displayValue = w.value;
+        let mostrarSubtitulo = true; // El subtítulo (ej. "%") solo se agrega si el valor no lo trae ya incluido
+        if (format === 'percent') {
+          displayValue = w.value + '%';
+          mostrarSubtitulo = false;
+        } else if (format === 'currency') {
+          displayValue = '$' + w.value.toLocaleString('es-MX');
+          mostrarSubtitulo = false;
+        }
+        tValue.textContent = mostrarSubtitulo ? `${displayValue} ${subtitle.toLowerCase()}` : `${displayValue}`;
+        tooltip.style.opacity = '1';
+        positionTooltip(cx, cy);
+      });
+
+      group.addEventListener('mousemove', () => positionTooltip(cx, cy));
+      group.addEventListener('mouseleave', () => { tooltip.style.opacity = '0'; });
+
+      svg.appendChild(group);
+    });
+
+    function positionTooltip(cx, cy) {
+      const svgRect = svg.getBoundingClientRect();
+      const scaleX = svgRect.width / width;
+      const scaleY = svgRect.height / height;
+      const px = cx * scaleX;
+      const py = cy * scaleY;
+      tooltip.style.left = `${px}px`;
+      tooltip.style.top = `${py}px`;
+    }
+}
+
+const kpi1Data = {
+    title: 'SELL OUT (SO)',
+    subtitle: 'TM',
+    goal: 110,
+    format: 'toneladas',
+
+    // ===========================================================
+    // NÚMERO GRANDE FINAL — 100% manual (ver explicación completa
+    // arriba de la función renderKPI). Edita solo "texto" y "colorValor".
+    //   resultado      -> se usa cuando el toggle está en "Resultado"
+    //   cumplimiento   -> se usa cuando el toggle está en "% Cumplimiento"
+    // colorValor es un número 0-100 (o más) que solo decide el color:
+    //   >= 80 verde | 50-79 naranja | < 50 rojo
+    // ===========================================================
+    resultado:    { texto: '113 TM', colorValor: 100 },
+    cumplimiento: { texto: '102%',   colorValor: 102 },
+
+    weeks: [
+      { week: 'Semana 1', value: 128 }, { week: 'Semana 2', value: 85 },
+      { week: 'Semana 3', value: 130 }, { week: 'Semana 4', value: 123 },
+      { week: 'Semana 5', value: 100 }, { week: 'Semana 6', value: 110 }
+    ]
+};
+
+const kpi2Data = {
+    title: 'BRECHA',
+    subtitle: '%',
+    goal: 20,
+    format: 'porcentuales',
+    // metaEsTecho: true -> significa que la meta es un "techo" que NO se
+    // quiere superar (a diferencia de la mayoría de KPIs, donde superar
+    // la meta es bueno). Se usa en el modo "% Cumplimiento" para calcular
+    // el % de cada semana correctamente (ver calcularCumplimientoSemana).
+    metaEsTecho: true,
+
+    // NÚMERO GRANDE FINAL — 100% manual (ver kpi1Data para la explicación completa)
+    resultado:    { texto: '18PP', colorValor: 18 },
+    cumplimiento: { texto: '24%',  colorValor: 24 },
+
+    weeks: [
+      { week: 'Semana 1', value: 10 }, { week: 'Semana 2', value: 20 },
+      { week: 'Semana 3', value: 15 }, { week: 'Semana 4', value: 12 },
+      { week: 'Semana 5', value: 35 }, { week: 'Semana 6', value: 14 }
+    ]
+};
+
+const kpi3Data = {
+    title: 'EFICIENCIA DE INVERSIÓN (EI)',
+    subtitle: '%',
+    goal: 70,
+    format: 'percent',
+
+    // NÚMERO GRANDE FINAL — 100% manual (ver kpi1Data para la explicación completa)
+    resultado:    { texto: '73%', colorValor: 73 },
+    cumplimiento: { texto: '73%', colorValor: 73 },
+
+    weeks: [
+      { week: 'Semana 1', value: 76 }, { week: 'Semana 2', value: 90 },
+      { week: 'Semana 3', value: 72 }, { week: 'Semana 4', value: 72 },
+      { week: 'Semana 5', value: 45 }, { week: 'Semana 6', value: 80 }
+    ]
+};
+
+const kpi4Data = {
+    title: 'PARTICIPACIÓN',
+    subtitle: '%',
+    goal: 100,
+    format: 'percent',
+
+    // NÚMERO GRANDE FINAL — 100% manual (ver kpi1Data para la explicación completa)
+    resultado:    { texto: '96%', colorValor: 96 },
+    cumplimiento: { texto: '96%', colorValor: 96 },
+
+    weeks: [
+      { week: 'Semana 1', value: 95 }, { week: 'Semana 2', value: 100 },
+      { week: 'Semana 3', value: 80 }, { week: 'Semana 4', value: 100 },
+      { week: 'Semana 5', value: 90 }, { week: 'Semana 6', value: 113 }
+    ]
+};
+
+const kpi5Data = {
+    title: 'NPS',
+    subtitle: 'Pts',
+    goal: 85,
+    format: 'puntos',
+
+    // NÚMERO GRANDE FINAL — 100% manual (ver kpi1Data para la explicación completa)
+    resultado:    { texto: '85Pts', colorValor: 100 },
+    cumplimiento: { texto: '100%',  colorValor: 100 },
+
+    weeks: [
+      { week: 'Semana 1', value: 78 }, { week: 'Semana 2', value: 82 },
+      { week: 'Semana 3', value: 88 }, { week: 'Semana 4', value: 85 },
+      { week: 'Semana 5', value: 90 }, { week: 'Semana 6', value: 87 }
+    ]
+};
+
+// ===========================================================================
+// MODO "% CUMPLIMIENTO": gráfico de barras
+// ===========================================================================
+// Dibuja, para cada semana, una barra cuya altura representa el % de
+// cumplimiento respecto a la meta de esa semana (0% a 100%+). El color de
+// cada barra (verde/naranja/rojo) depende de ese mismo %, usando los mismos
+// 3 umbrales que el resto del dashboard: >=80 verde, 50-79 naranja, <50 rojo.
+//
+// Reutiliza el MISMO <svg> y el MISMO tooltip que el modo "Resultado" (por
+// eso primero limpia el svg con innerHTML = ''), así que no necesitó nada
+// nuevo en el HTML: la tarjeta es la misma, solo cambia lo que hay adentro.
+// ===========================================================================
+
+function calcularCumplimientoSemana(valor, meta, config) {
+    // Los KPIs cuyo "value" YA es un porcentaje (format: 'percent') usan
+    // ese mismo valor como % de cumplimiento de la semana (ej. Eficiencia
+    // de Inversión y Participación: si value=76, esa semana cumplió 76%).
+    if (config.format === 'percent') return valor;
+
+    // Los KPIs donde un valor MÁS BAJO es mejor (ej. BRECHA) deben marcar
+    // config.metaEsTecho = true (ver kpi2Data más abajo). Ahí el
+    // cumplimiento mide "qué tan por debajo de la meta-techo te quedaste".
+    if (config.metaEsTecho) {
+      return Math.max(0, ((meta - valor) / meta) * 100);
+    }
+
+    // Caso general (ej. SELL OUT, NPS): cumplimiento = valor logrado / meta.
+    return (valor / meta) * 100;
+}
+
+// Convierte un número 0-100(+) en uno de los 3 colores del dashboard.
+// Se usa en varios lugares: el color de cada barra individual del modo
+// "% Cumplimiento", Y el color del número grande final de ambos modos
+// (ver config.resultado.colorValor / config.cumplimiento.colorValor en
+// cada kpiXData más arriba).
+function colorSegunPorcentaje(porcentaje) {
+    if (porcentaje >= 80) return '#1e5c3a'; // Verde
+    if (porcentaje >= 50) return '#eab308'; // Naranja
+    return '#dc2626';                       // Rojo
+}
+
+function renderBarrasCumplimiento(cardId, config) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+
+    const { title, subtitle, goal, weeks } = config;
+
+    card.querySelector('[data-field="title"]').textContent = title;
+    card.querySelector('[data-field="subtitle"]').textContent = subtitle;
+
+    // Cumplimiento de cada semana (array paralelo a "weeks"). Esto SÍ se
+    // sigue calculando: es lo que decide la altura y el color de CADA
+    // barra individual (eso no cambió).
+    const cumplimientos = weeks.map(w => calcularCumplimientoSemana(w.value, goal, config));
+
+    // ===========================================================
+    // NÚMERO GRANDE FINAL (modo "% Cumplimiento") — 100% manual.
+    // Ya NO es el promedio de las barras: se lee directo de
+    // config.cumplimiento.texto / config.cumplimiento.colorValor
+    // (ver la explicación completa en renderKPI, arriba en este archivo).
+    // ===========================================================
+    const avgEl = card.querySelector('[data-field="avg"]');
+    avgEl.textContent = config.cumplimiento.texto;
+    avgEl.style.color = colorSegunPorcentaje(config.cumplimiento.colorValor);
+
+    const svg = card.querySelector('.svg-grafico-linea');
+    const tooltip = card.querySelector('.tooltip-grafico-linea');
+    const tWeek = tooltip.querySelector('.semana-grafico-linea');
+    const tValue = tooltip.querySelector('.valor-grafico-linea');
+
+    svg.innerHTML = ''; // Limpia lo que haya dibujado el modo "Resultado"
+
+    const width = 600;
+    const height = 32;
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+    const padX = 10;
+    const padY = 4;
+    const drawW = width - padX * 2;
+    const drawH = height - padY * 2;
+
+    // Escala de 0% a 100% ÚNICAMENTE (a pedido: la altura máxima de
+    // cualquier barra es el 100%, incluso si el % real es mayor —
+    // ej. 113% se dibuja con la misma altura que 100%). El tooltip
+    // siempre muestra el % REAL sin recortar, aunque la barra visualmente
+    // se "tope" ahí. Ya NO se dibuja ninguna línea de meta/referencia.
+    const escalaMax = 100;
+    const yFor = (pct) => padY + drawH - (Math.min(pct, escalaMax) / escalaMax) * drawH;
+    const yBase = padY + drawH; // "piso" del gráfico = 0% de cumplimiento
+
+    // Ancho de cada "columna" según cuántas semanas haya (se adapta solo
+    // si agregas o quitas semanas del array "weeks" de cada KPI)
+    const numBarras = weeks.length;
+    const espacioEntreBarras = 6;
+    const anchoColumna = (drawW - espacioEntreBarras * (numBarras - 1)) / numBarras;
+
+    // La barra VISIBLE es más angosta que su columna (a pedido: "líneas
+    // más delgadas"). FACTOR_GROSOR_BARRA controla qué tan delgada se ve:
+    // 1.0 = ocupa toda la columna (como antes) | 0.5 = la mitad, centrada.
+    // Ajusta este único número si quieres barras más gruesas o más finas.
+    const FACTOR_GROSOR_BARRA = 0.5;
+    const anchoBarraVisible = anchoColumna * FACTOR_GROSOR_BARRA;
+
+    weeks.forEach((w, i) => {
+      const cumplimiento = cumplimientos[i];
+      const colorBarra = colorSegunPorcentaje(cumplimiento);
+
+      const xColumna = padX + i * (anchoColumna + espacioEntreBarras);
+      const xBarraVisible = xColumna + (anchoColumna - anchoBarraVisible) / 2; // centrada en su columna
+
+      const yTop = yFor(cumplimiento);
+      const alturaBarra = Math.max(yBase - yTop, 1); // mínimo 1px para que siempre se vea algo
+
+      // --- Barra visible (delgada, centrada en su columna) ---
+      const barraVisible = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      barraVisible.setAttribute('x', xBarraVisible);
+      barraVisible.setAttribute('y', yTop);
+      barraVisible.setAttribute('width', anchoBarraVisible);
+      barraVisible.setAttribute('height', alturaBarra);
+      barraVisible.setAttribute('rx', 1.5);
+      barraVisible.setAttribute('fill', colorBarra);
+      barraVisible.setAttribute('class', 'barra-cumplimiento-grafico-linea');
+      barraVisible.style.pointerEvents = 'none'; // el hover lo maneja el "área de detección" de abajo
+
+      // --- Área de detección invisible: ocupa TODA la columna y TODO el
+      // alto del gráfico (no solo el pedacito de la barra visible). Esto
+      // es lo que soluciona que "a veces no se vea nada de información"
+      // al pasar el mouse — antes, si una barra era muy bajita (ej. 0%
+      // de cumplimiento), el área para activar el tooltip era casi del
+      // tamaño de 1px y era casi imposible acertarle con el mouse. ---
+      const areaDeteccion = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      areaDeteccion.setAttribute('x', xColumna);
+      areaDeteccion.setAttribute('y', padY);
+      areaDeteccion.setAttribute('width', anchoColumna);
+      areaDeteccion.setAttribute('height', drawH);
+      areaDeteccion.setAttribute('fill', 'transparent'); // invisible, pero SÍ recibe el mouse
+      areaDeteccion.setAttribute('class', 'area-deteccion-grafico-linea'); // le da el cursor:pointer
+
+      const cx = xColumna + anchoColumna / 2;
+      const cy = yTop;
+
+      areaDeteccion.addEventListener('mouseenter', () => {
+        tWeek.textContent = w.week;
+        tValue.textContent = `${Math.round(cumplimiento)}% de cumplimiento`;
+        tooltip.style.opacity = '1';
+        positionTooltip(cx, cy);
+        barraVisible.style.opacity = '0.8'; // mismo efecto visual que antes al pasar el mouse
+      });
+      areaDeteccion.addEventListener('mousemove', () => positionTooltip(cx, cy));
+      areaDeteccion.addEventListener('mouseleave', () => {
+        tooltip.style.opacity = '0';
+        barraVisible.style.opacity = '1';
+      });
+
+      svg.appendChild(barraVisible);
+      svg.appendChild(areaDeteccion);
+    });
+
+    function positionTooltip(cx, cy) {
+      const svgRect = svg.getBoundingClientRect();
+      const scaleX = svgRect.width / width;
+      const scaleY = svgRect.height / height;
+      const px = cx * scaleX;
+      const py = cy * scaleY;
+      tooltip.style.left = `${px}px`;
+      tooltip.style.top = `${py}px`;
+    }
+}
+
+// ===========================================================================
+// REGISTRO DE KPIS + TOGGLE "Resultado" / "% Cumplimiento"
+// ===========================================================================
+// Este array es la única lista "maestra" de qué tarjeta (id) usa qué datos.
+// PARA AGREGAR UN 6TO KPI EN EL FUTURO:
+//   1. Agrega su bloque HTML en index.html (copiando una tarjeta existente)
+//   2. Crea su "kpi6Data" más arriba, junto a los demás
+//   3. Agrégalo aquí abajo: { id: 'kpi6-grafico-linea', data: kpi6Data }
+// Con eso, el toggle Resultado/% Cumplimiento ya lo va a incluir solo.
+// ===========================================================================
+const CONFIGURACION_KPIS_GRAFICO_LINEA = [
+  { id: 'kpi1-grafico-linea', data: kpi1Data },
+  { id: 'kpi2-grafico-linea', data: kpi2Data },
+  { id: 'kpi3-grafico-linea', data: kpi3Data },
+  { id: 'kpi4-grafico-linea', data: kpi4Data },
+  { id: 'kpi5-grafico-linea', data: kpi5Data }
+];
+
+// Dibuja las 5 tarjetas en el modo indicado ('resultado' o 'cumplimiento')
+function renderTodosLosKPIs(modo) {
+  CONFIGURACION_KPIS_GRAFICO_LINEA.forEach(({ id, data }) => {
+    if (modo === 'cumplimiento') {
+      renderBarrasCumplimiento(id, data);
+    } else {
+      renderKPI(id, data);
+    }
+  });
+}
+
+// Conecta los botones .toggle-modo-btn (ver index.html) con renderTodosLosKPIs
+function inicializarToggleModoVisualizacion() {
+  const botones = document.querySelectorAll('.toggle-modo-btn');
+  if (botones.length === 0) return; // Por si el toggle no existe en el HTML
+
+  botones.forEach(boton => {
+    boton.addEventListener('click', () => {
+      const modo = boton.dataset.modo; // 'resultado' o 'cumplimiento'
+
+      botones.forEach(b => b.classList.remove('is-active'));
+      boton.classList.add('is-active');
+
+      renderTodosLosKPIs(modo);
+    });
+  });
+}
+
+// --- Arranque inicial: se dibuja en modo "resultado" (el de siempre) ---
+renderTodosLosKPIs('resultado');
+inicializarToggleModoVisualizacion();
