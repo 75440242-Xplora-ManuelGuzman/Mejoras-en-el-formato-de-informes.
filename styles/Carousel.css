@@ -1,7 +1,5 @@
 /* ===========================================================
    CARRUSEL DE EVIDENCIAS
-   Tamaño fijo: todas las imágenes se recortan (object-fit)
-   para verse igual sin importar su tamaño/orientación original.
    =========================================================== */
 .carousel {
     position: relative;
@@ -9,23 +7,19 @@
     align-items: center;
     gap: 0.5rem;
 
-    /* --- Layout "sin scroll" (ver comentario grande en styles.css) ---
-       Ocupa todo el alto que .evidence-section le deje disponible. */
-    flex: 1 1 auto;
-    min-height: 0;
+    /* A pedido: que quede COMPACTO y no ocupe todo el alto disponible
+       (antes se estiraba con flex:1 para llenar .evidence-section).
+       Ahora tiene un alto fijo y pequeño; si sobra espacio debajo en
+       .evidence-section, simplemente queda en blanco — mejor eso a que
+       el carrusel se vea gigante. */
+    flex: 0 0 auto;
+    height: 130px;
 }
 
 .carousel-viewport {
     flex: 1;
+    height: 100%;
     overflow: hidden;
-    border-radius: 10px;
-    background-color: #F1F3F4;
-
-    /* antes: height: 275px (fijo). Ahora se estira con .carousel de arriba,
-       así el carrusel siempre ocupa el espacio disponible sin desbordar. */
-    height: auto;
-    align-self: stretch;
-    min-height: 0;
 }
 
 .carousel-track {
@@ -36,15 +30,61 @@
 }
 
 .carousel-slide {
-    flex: 0 0 100%;
+    /* Ancho de cada foto: 100% dividido entre cuántas se ven a la vez
+       (--carousel-visibles la define Carousel.js según el atributo
+       data-visible del HTML — ver index.html). Si no se definió, el
+       valor de respaldo es 1 (una foto ocupando todo el ancho). */
+    flex: 0 0 calc(100% / var(--carousel-visibles, 1));
     height: 100%;
+    padding: 0 4px; /* separación visual entre fotos, sin usar "gap"
+                        (que complicaría el cálculo del desplazamiento) */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
-.carousel-slide img {
+/* Contenedor de la foto en sí (sin la leyenda) — cada foto tiene sus
+   PROPIAS esquinas redondeadas, a diferencia de antes (donde una sola
+   foto grande llenaba todo el viewport). */
+.carousel-item {
+    flex: 1;
+    min-height: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #F1F3F4;
+}
+
+.carousel-item img {
     width: 100%;
     height: 100%;
     object-fit: cover; /* Recorta manteniendo proporción, tamaño siempre igual */
     display: block;
+}
+
+/* Leyenda (nombre del PDV + ciudad/canal) debajo de cada foto */
+.carousel-caption {
+    flex-shrink: 0;
+    padding-top: 4px;
+    line-height: 1.25;
+}
+
+.carousel-caption strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #202124;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* si el nombre es muy largo, se corta con "..." en vez de desbordar */
+}
+
+.carousel-caption span {
+    display: block;
+    font-size: 10px;
+    color: #80868B;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* --- Flechas --- */
@@ -79,7 +119,10 @@
     outline-offset: 2px;
 }
 
-/* --- Puntos de navegación --- */
+/* --- Puntos de navegación ---
+   OJO: este carrusel de evidencias ya NO los usa (solo flechas, ver
+   index.html) — estas reglas quedan para cualquier OTRO carrusel futuro
+   que sí quiera puntos (basta con agregarle su <div class="carousel-dots">). */
 .carousel-dots {
     position: absolute;
     bottom: 8px;
@@ -134,6 +177,8 @@
 @media (max-width: 768px) {
     .carousel {
         display: block; /* ya no es una fila de 3 columnas (flecha|imagen|flecha) */
+        height: auto; /* anula el alto fijo de escritorio (130px) — en celular
+                          el alto lo decide el aspect-ratio de .carousel-viewport */
         /* position:relative ya está definido más arriba (fuera de este
            media query) y sigue aplicando — es lo que permite que las
            flechas y los puntos se posicionen ENCIMA de la imagen */

@@ -3,13 +3,25 @@
    auto-fit + minmax: el grid se adapta solo al agregar o
    quitar tarjetas, sin tocar el CSS.
    =========================================================== */
+
+/*
 .kpis-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 10px;
     padding: 8px 0;
+    flex-shrink: 0;
+}
+*/
+
+.kpis-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); /* Volvemos al 1fr para que llenen el espacio */
+    gap: 15px; /* Aumentamos ligeramente el espacio entre tarjetas (antes 10px) */
+    padding: 8px 1.5rem; /* Agregamos padding horizontal (1.5rem) para despegarlas de los bordes de la pantalla */
     flex-shrink: 0; /* Layout "sin scroll" (ver styles.css): piso fijo, no se achica */
 }
+
 
 /* ===========================================================
    Estructura de la tarjeta (para el efecto flip 3D)

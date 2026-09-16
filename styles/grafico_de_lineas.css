@@ -255,21 +255,10 @@
         }
 
         /* ===========================================================
-           GRÁFICO DE BARRAS (modo "% Cumplimiento")
-           Reutiliza el mismo <svg class="svg-grafico-linea"> y el mismo
-           .tooltip-grafico-linea que el modo "Resultado" — por eso no
-           necesita casi CSS propio, solo estas 2 clases.
+           MODO "% CUMPLIMIENTO"
+           Ahora es un gráfico de LÍNEAS (igual estilo que "Resultado"),
+           no de barras — reutiliza exactamente las mismas clases del
+           modo Resultado (.punto-nucleo-grafico-linea,
+           .grupo-puntos-grafico-linea, etc.), por eso no necesita CSS
+           propio. Ver renderLineaCumplimiento() en grafico_de_lineas.js.
            =========================================================== */
-        .barra-cumplimiento-grafico-linea {
-            transition: opacity 0.15s ease;
-            /* pointer-events:none se define desde el JS: el hover lo
-               detecta .area-deteccion-grafico-linea (más abajo), que es
-               más grande e invisible, para que sea fácil "acertarle" con
-               el mouse incluso a las barras muy bajitas (ej. 0% de
-               cumplimiento). Ver renderBarrasCumplimiento() en
-               grafico_de_lineas.js. */
-        }
-
-        .area-deteccion-grafico-linea {
-            cursor: pointer;
-        }

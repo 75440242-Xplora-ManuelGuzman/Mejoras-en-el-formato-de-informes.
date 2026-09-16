@@ -7,15 +7,9 @@
     background-color: #FFFFFF;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    padding: 1rem 1.2rem;
-}
-
-.insights-header h2 {
-    font-size: 15px;
-    font-weight: 800;
-    color: #202124;
-    letter-spacing: 0.3px;
-    margin-bottom: 0.9rem;
+    padding: 12px 18px; 
+    margin-top: 15px; 
+    max-width: 800px; 
 }
 */
 
@@ -23,132 +17,74 @@
     background-color: #FFFFFF;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    padding: 12px 18px; /* Ligeramente achicado */
-    margin-top: 15px; /* Separación debajo del gráfico de líneas */
-    max-width: 800px; /* Alineado al ancho del gráfico */
+    padding: 1rem 1.2rem; /* Igualado al padding de evidencias */
+    flex-shrink: 0; /* Obligatorio: evita que el carrusel de fotos lo aplaste */
 }
+
+/* --- Título y Contenedor de Botones Dinámicos --- */
+.insights-header {
+    display: flex;
+    justify-content: space-between; /* Separa el título (izq) de los botones (der) */
+    align-items: center;
+    flex-wrap: wrap; /* En caso de pantallas muy pequeñas */
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
 .insights-header h2 {
     font-size: 14px;
     font-weight: 800;
     color: #202124;
     letter-spacing: 0.3px;
-    margin-bottom: 10px;
+    margin-bottom: 0; /* Reseteado porque flexbox ya maneja el espaciado */
 }
 
-
-/* --- Fila de íconos --- */
-
-/*
-.insights-icons {
+/* Contenedor de los botones circulares */
+.insights-indicators {
     display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.9rem;
+    gap: 8px;
+    align-items: center;
 }
 
-.insight-icon-btn {
-    width: 40px;
-    height: 40px;
+/* Botones circulares inyectados desde JS */
+.insight-dot-btn {
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: 800;
-    color: #FFFFFF;
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    font-size: 12px;
+    font-weight: bold;
+    opacity: 0.4; /* Opacos cuando no están seleccionados */
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
 
-.insight-icon-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+.insight-dot-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
 }
 
-.insight-icon-btn:focus-visible {
-    outline: 2px solid #017d03;
-    outline-offset: 2px;
+.insight-dot-btn.is-active {
+    opacity: 1;
+    transform: scale(1.15); /* Crece ligeramente */
 }
 
-*/
+/* Colores de los botones según el 'tono' inyectado y su anillo cuando están activos */
+.insight-dot-btn[data-tone="danger"] { background-color: #C5221F; }
+.insight-dot-btn[data-tone="danger"].is-active { box-shadow: 0 0 0 3px rgba(197, 34, 31, 0.3); }
 
-/* Estado seleccionado: se resalta con un anillo */
+.insight-dot-btn[data-tone="warning"] { background-color: #F9A825; }
+.insight-dot-btn[data-tone="warning"].is-active { box-shadow: 0 0 0 3px rgba(249, 168, 37, 0.3); }
 
-/*
-.insight-icon-btn.is-active {
-    box-shadow: 0 0 0 3px rgba(1, 125, 3, 0.35), 0 4px 8px rgba(0, 0, 0, 0.18);
-}
+.insight-dot-btn[data-tone="success"] { background-color: #1E8E3E; }
+.insight-dot-btn[data-tone="success"].is-active { box-shadow: 0 0 0 3px rgba(30, 142, 62, 0.3); }
 
-.insight-icon-btn--danger  { background-color: #C5221F; }
-.insight-icon-btn--warning { background-color: #F9A825; }
-.insight-icon-btn--success { background-color: #1E8E3E; }
-*/
-
-
-/* --- Panel de detalle --- */
-/*
-.insight-detail {
-    background-color: #F8F9FA;
-    border-radius: 10px;
-    padding: 0.9rem 1rem;
-    min-height: 96px;
-    display: flex;
-    align-items: center;
-}
-
-.insight-detail-placeholder {
-    font-size: 13px;
-    color: #80868B;
-    margin: 0 auto;
-}
-
-.insight-detail-content {
-    display: flex;
-    gap: 0.8rem;
-    width: 100%;
-    animation: insight-fade-in 0.25s ease;
-}
-
-@keyframes insight-fade-in {
-    from { opacity: 0; transform: translateY(4px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.insight-detail-icon {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FFFFFF;
-    font-size: 16px;
-    font-weight: 800;
-}
-
-.insight-detail-body h3 {
-    font-size: 14px;
-    font-weight: 800;
-    color: #202124;
-    margin-bottom: 0.2rem;
-}
-
-.insight-detail-stats {
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 0.3rem;
-}
-
-.insight-detail-body p {
-    font-size: 12.5px;
-    line-height: 1.4;
-    color: #5F6368;
-}
-*/
-
+/* --- Panel de detalle (Carrusel) --- */
 .insight-carousel-wrapper {
     display: flex;
     align-items: center;
@@ -239,9 +175,7 @@
     margin: 0;
 }
 
-
-/* Colores de texto/ícono según el tipo de insight, reutilizando
-   los mismos nombres de estado que las KPI cards */
+/* Colores del panel de detalle según el tipo de insight */
 .insight-detail-content[data-tone="danger"]  .insight-detail-icon { background-color: #C5221F; }
 .insight-detail-content[data-tone="danger"]  .insight-detail-stats { color: #C5221F; }
 
@@ -252,10 +186,8 @@
 .insight-detail-content[data-tone="success"] .insight-detail-stats { color: #1E8E3E; }
 
 /* ===========================================================================
-   MODO CELULAR (max-width: 768px) — mismo punto de quiebre que styles.css
-   ===========================================================================
-   Los botones de flecha (prev/next) crecen un poco: 32px es un objetivo
-   táctil algo chico para un dedo (lo recomendado suele ser ~40-44px). */
+   MODO CELULAR (max-width: 768px)
+   =========================================================================== */
 @media (max-width: 768px) {
     .insight-nav-btn {
         width: 40px;
