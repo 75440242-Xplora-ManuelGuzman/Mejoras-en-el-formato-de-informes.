@@ -24,6 +24,8 @@
     <link rel="stylesheet" href="styles/Insights.css">
     <link rel="stylesheet" href="styles/Carousel.css">
     <link rel="stylesheet" href="styles/grafico_de_lineas.css">
+    <link rel="stylesheet" href="styles/grafico_doble_lineas.css">
+    <link rel="stylesheet" href="styles/feedback.css">
 
 </head>
 
@@ -111,27 +113,26 @@
             </ul>
         </div>
 
-        <div class="dropdown-wrapper">
+        <div class="dropdown-wrapper" id="filtro-semanas">
             <button class="dropdown-btn">
                 <div class="text-container">
                     <span class="label">Semanas</span>
                     <span class="value">Todas</span>
                 </div>
                 <div class="icon">
-                    <!-- Usamos un SVG en lugar de una letra "v" para que se vea más profesional -->
                     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M2 2L6 6L10 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
             </button>
-            <!-- Lista de opciones -->
-            <ul class="dropdown-menu">
-                <li class="dropdown-item">Semana 1</li>
-                <li class="dropdown-item">Semana 2</li>
-                <li class="dropdown-item">Semana 3</li>
-                <li class="dropdown-item">Semana 4</li>
-                <li class="dropdown-item">Semana 5</li>
-                <li class="dropdown-item">Semana 6</li>
+            <ul class="dropdown-menu dropdown-menu--checkboxes">
+                <!-- Se agregó un <label> y un <input type="checkbox"> a cada opción. 'checked' indica que vienen activados por defecto -->
+                <li class="dropdown-item"><label><input type="checkbox" value="Semana 1" checked> Semana 1</label></li>
+                <li class="dropdown-item"><label><input type="checkbox" value="Semana 2" checked> Semana 2</label></li>
+                <li class="dropdown-item"><label><input type="checkbox" value="Semana 3" checked> Semana 3</label></li>
+                <li class="dropdown-item"><label><input type="checkbox" value="Semana 4" checked> Semana 4</label></li>
+                <li class="dropdown-item"><label><input type="checkbox" value="Semana 5" checked> Semana 5</label></li>
+                <li class="dropdown-item"><label><input type="checkbox" value="Semana 6" checked> Semana 6</label></li>
             </ul>
         </div>
 
@@ -536,6 +537,150 @@
 
     </div>       
 
+    <!-- ============================================================
+    GRÁFICO DE DOBLE LÍNEA (Objetivo vs. Resultado) — modo "Resultado"
+    ============================================================
+    Empieza OCULTO (clase "oculto-grafico") porque el modo activo por
+    defecto al cargar la página es "% Cumplimiento" (ver el toggle más
+    arriba). grafico_de_lineas.js se encarga de mostrar/ocultar este
+    bloque y el de arriba según el botón que se presione.
+
+    Toda la configuración (colores, cifras manuales, semanas) vive en
+    grafico_doble_lineas.js — array KPIS_DOBLE_LINEA. El CSS está en
+    grafico_doble_lineas.css.
+
+    PARA AGREGAR UN 6TO KPI:
+    1. Copia un bloque completo <div class="tarjeta-kpi-doble-linea">...</div>
+    2. Cambia su id (ej. de "kpi5-doble-linea" a "kpi6-doble-linea")
+    3. Agrega su configuración correspondiente en KPIS_DOBLE_LINEA
+       (grafico_doble_lineas.js), con el MISMO cardId que pusiste aquí.
+    ============================================================ -->
+    <div class="tablero-grafico-doble-linea oculto-grafico" id="tableroDobleLinea">
+
+        <div class="tarjeta-kpi-doble-linea" id="kpi1-doble-linea">
+            <div class="encabezado-kpi-doble-linea">
+                <div class="logo-kpi-doble-linea">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="16 7 22 7 22 13" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-doble-linea" data-field="title">SELL OUT (SO)</div>
+                    <div class="subtitulo-kpi-doble-linea" data-field="subtitle">TM</div>
+                </div>
+            </div>
+            <div class="area-grafico-doble-linea">
+                <svg class="svg-doble-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-doble-linea">
+                    <div class="semana-doble-linea"></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Objetivo:</span> <span class="valor-doble-linea valor-objetivo-doble-linea"></span></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Resultado:</span> <span class="valor-doble-linea valor-resultado-doble-linea"></span></div>
+                </div>
+            </div>
+            <div class="valor-kpi-doble-linea" data-field="valor">0</div>
+        </div>
+
+        <div class="tarjeta-kpi-doble-linea" id="kpi2-doble-linea">
+            <div class="encabezado-kpi-doble-linea">
+                <div class="logo-kpi-doble-linea">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="18" y1="8" x2="18" y2="16" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="6" y1="8" x2="6" y2="16" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="18" y1="12" x2="22" y2="12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="2" y1="12" x2="6" y2="12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="9" y1="12" x2="15" y2="12" stroke="#fff" stroke-width="1.8" stroke-dasharray="2 2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-doble-linea" data-field="title">BRECHA</div>
+                    <div class="subtitulo-kpi-doble-linea" data-field="subtitle">%</div>
+                </div>
+            </div>
+            <div class="area-grafico-doble-linea">
+                <svg class="svg-doble-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-doble-linea">
+                    <div class="semana-doble-linea"></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Objetivo:</span> <span class="valor-doble-linea valor-objetivo-doble-linea"></span></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Resultado:</span> <span class="valor-doble-linea valor-resultado-doble-linea"></span></div>
+                </div>
+            </div>
+            <div class="valor-kpi-doble-linea" data-field="valor">0</div>
+        </div>
+
+        <div class="tarjeta-kpi-doble-linea" id="kpi3-doble-linea">
+            <div class="encabezado-kpi-doble-linea">
+                <div class="logo-kpi-doble-linea">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="12" y1="1" x2="12" y2="23" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-doble-linea" data-field="title">EFICIENCIA DE INVERSIÓN (EI)</div>
+                    <div class="subtitulo-kpi-doble-linea" data-field="subtitle">%</div>
+                </div>
+            </div>
+            <div class="area-grafico-doble-linea">
+                <svg class="svg-doble-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-doble-linea">
+                    <div class="semana-doble-linea"></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Objetivo:</span> <span class="valor-doble-linea valor-objetivo-doble-linea"></span></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Resultado:</span> <span class="valor-doble-linea valor-resultado-doble-linea"></span></div>
+                </div>
+            </div>
+            <div class="valor-kpi-doble-linea" data-field="valor">0</div>
+        </div>
+
+        <div class="tarjeta-kpi-doble-linea" id="kpi4-doble-linea">
+            <div class="encabezado-kpi-doble-linea">
+                <div class="logo-kpi-doble-linea">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 12A10 10 0 0 0 12 2v10z" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-doble-linea" data-field="title">PARTICIPACIÓN</div>
+                    <div class="subtitulo-kpi-doble-linea" data-field="subtitle">%</div>
+                </div>
+            </div>
+            <div class="area-grafico-doble-linea">
+                <svg class="svg-doble-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-doble-linea">
+                    <div class="semana-doble-linea"></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Objetivo:</span> <span class="valor-doble-linea valor-objetivo-doble-linea"></span></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Resultado:</span> <span class="valor-doble-linea valor-resultado-doble-linea"></span></div>
+                </div>
+            </div>
+            <div class="valor-kpi-doble-linea" data-field="valor">0</div>
+        </div>
+
+        <div class="tarjeta-kpi-doble-linea" id="kpi5-doble-linea">
+            <div class="encabezado-kpi-doble-linea">
+                <div class="logo-kpi-doble-linea">
+                    <svg viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="titulo-kpi-doble-linea" data-field="title">NPS</div>
+                    <div class="subtitulo-kpi-doble-linea" data-field="subtitle">Pts</div>
+                </div>
+            </div>
+            <div class="area-grafico-doble-linea">
+                <svg class="svg-doble-linea" preserveAspectRatio="none"></svg>
+                <div class="tooltip-doble-linea">
+                    <div class="semana-doble-linea"></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Objetivo:</span> <span class="valor-doble-linea valor-objetivo-doble-linea"></span></div>
+                    <div class="fila-doble-linea"><span class="etiqueta-doble-linea">Resultado:</span> <span class="valor-doble-linea valor-resultado-doble-linea"></span></div>
+                </div>
+            </div>
+            <div class="valor-kpi-doble-linea" data-field="valor">0</div>
+        </div>
+
+    </div>
+
 </section>
  
     <!-- PANEL DERECHO -->
@@ -682,6 +827,39 @@
                 -->
  
         </section>
+
+        <section class="feedback-wrapper">
+            <!-- ============================================================
+            TARJETA DE FEEDBACK DE ACTIVIDADES
+            ============================================================ -->
+            <div class="feedback-card" id="feedbackCard">
+                <div class="feedback-header">
+                    <div class="feedback-title-wrapper">
+                        <h3 class="feedback-title">FEEDBACK DE ACTIVIDADES</h3>
+                    </div>
+                    <div class="feedback-nav">
+                        <button class="feedback-btn feedback-btn-prev" aria-label="Anterior">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <button class="feedback-btn feedback-btn-next" aria-label="Siguiente">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="feedback-body">
+                    <div class="feedback-track" id="feedbackTrack">
+                        <!-- Los slides se generan dinámicamente con JS -->
+                    </div>
+                </div>
+
+                <div class="feedback-dots" id="feedbackDots"></div>
+            </div>
+        </section>
     </aside>
 </main>
 
@@ -694,6 +872,9 @@
 <script src="js/Insights.js"></script>
 <script src="js/Carousel.js"></script>
 <script src="js/grafico_de_lineas.js"></script>
+<script src="js/grafico_doble_lineas.js"></script>
+<script src="js/feedback.js"></script>
+
 
 </body>
 </html>
