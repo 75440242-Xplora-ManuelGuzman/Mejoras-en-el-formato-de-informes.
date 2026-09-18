@@ -1,0 +1,287 @@
+/* ===========================================================================
+   GRÁFICO DE DOBLE LÍNEA (Objetivo vs. Resultado) — modo "Resultado"
+   ===========================================================================
+   Este archivo es 100% independiente del gráfico de "% Cumplimiento"
+   (grafico_de_lineas.css / grafico_de_lineas.js) — a propósito, para no
+   arriesgarnos a tocar esa parte que ya funciona. Usa sus propias clases
+   (todas terminan en "-doble-linea"), aunque visualmente están pensadas
+   para verse en armonía con el resto del dashboard (mismos colores,
+   tipografía, tamaños de tarjeta).
+
+   ESTRUCTURA (ver el HTML dentro de .left-panel, junto al toggle):
+   .tablero-grafico-doble-linea
+     └── .tarjeta-kpi-doble-linea (una por KPI)
+           ├── .encabezado-kpi-doble-linea (ícono + título + subtítulo)
+           ├── .area-grafico-doble-linea (el <svg>, dibujado por JS)
+           └── .valor-kpi-doble-linea (el número grande, manual)
+
+   CÓMO SE MUESTRA/OCULTA: la clase ".oculto-grafico" (display:none) se
+   agrega/quita desde grafico_de_lineas.js al hacer clic en el toggle
+   "Resultado" / "% Cumplimiento" — ver inicializarToggleModoVisualizacion().
+   =========================================================================== */
+
+.tablero-grafico-doble-linea {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 800px;
+    width: 100%;
+
+    /* Mismo esquema de "layout sin scroll" que .tablero-grafico-linea
+       (ver el comentario grande en styles.css): en escritorio/TV se
+       estira para ocupar el alto disponible de .left-panel. */
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Clase utilitaria de mostrar/ocultar, usada por el toggle para
+   alternar entre este tablero y .tablero-grafico-linea (el de
+   % Cumplimiento) — nunca se muestran los dos a la vez. */
+.oculto-grafico {
+    display: none;
+}
+
+.tarjeta-kpi-doble-linea {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+
+    /* Las 5 tarjetas reparten en partes iguales el alto disponible del
+       tablero — igual que en el gráfico de % Cumplimiento. */
+    flex: 1 1 0;
+    min-height: 0;
+}
+
+.encabezado-kpi-doble-linea {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    width: 150px;
+}
+
+.logo-kpi-doble-linea {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #1e5c3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(30, 92, 58, 0.25);
+}
+
+.logo-kpi-doble-linea svg {
+    width: 16px;
+    height: 16px;
+}
+
+.titulo-kpi-doble-linea {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: 0.3px;
+}
+
+.subtitulo-kpi-doble-linea {
+    font-size: 9px;
+    color: #7a7a7a;
+    margin-top: 1px;
+}
+
+.area-grafico-doble-linea {
+    flex: 1;
+    position: relative;
+    /* Igual que en grafico_de_lineas.css: height:100% (NO "auto") es
+       clave para evitar la referencia circular donde el tamaño de esta
+       caja dependería del propio SVG de adentro. Con height:100%, mide
+       el alto de su fila (.tarjeta-kpi-doble-linea), que en escritorio
+       ya es un valor definido de antemano por flexbox. */
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+}
+
+.area-grafico-doble-linea svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.valor-kpi-doble-linea {
+    font-size: 22px;
+    font-weight: 800;
+    flex-shrink: 0;
+    width: 70px;
+    text-align: right;
+    letter-spacing: -0.5px;
+    margin-left: auto;
+    transition: color 0.3s ease;
+}
+
+/* ===========================================================================
+   ESTILOS DEL SVG (grilla, líneas, puntos)
+   =========================================================================== */
+.linea-doble-grid {
+    stroke: #e5e7eb;
+    stroke-width: 1;
+}
+
+.linea-doble-axis-label {
+    font-size: 8px;
+    fill: #999;
+    font-family: inherit;
+}
+
+.linea-doble-week-label {
+    font-size: 8px;
+    fill: #7a7a7a;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+/* Línea de OBJETIVO: punteada, gris, sin interacción — igual que en tu
+   prototipo original. */
+.linea-doble-objetivo {
+    fill: none;
+    stroke: #9ca3af;
+    stroke-width: 1.5;
+    stroke-dasharray: 4, 3;
+}
+
+.punto-doble-objetivo {
+    fill: #ffffff;
+    stroke: #9ca3af;
+    stroke-width: 1.5;
+}
+
+/* Línea de RESULTADO: sólida, con el color que tú definas manualmente
+   por KPI (ver grafico_doble_lineas.js), y con la animación de "dibujado"
+   que traía tu archivo original — se mantiene intacta. */
+.linea-doble-resultado {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dibujarLineaDoble 1.2s ease-out forwards;
+}
+
+@keyframes dibujarLineaDoble {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Puntos de RESULTADO: interactivos — mismo efecto de "agrandar al pasar
+   el mouse" que tenía tu archivo original. */
+.punto-doble-resultado {
+    stroke: #ffffff;
+    stroke-width: 1.5;
+    cursor: pointer;
+    transition: r 0.2s ease;
+}
+
+.punto-doble-resultado:hover {
+    r: 6;
+}
+
+/* ===========================================================================
+   TOOLTIP (Objetivo + Resultado de la semana)
+   ===========================================================================
+   Visualmente calcado del tooltip del gráfico de % Cumplimiento (mismo
+   fondo oscuro, mismo globo con flecha) para que se sienta como parte
+   del mismo dashboard — pero con SU PROPIA clase, independiente, porque
+   este tooltip muestra 2 filas de datos (Objetivo y Resultado) en vez
+   de una sola.
+   =========================================================================== */
+.tooltip-doble-linea {
+    position: absolute;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    white-space: nowrap;
+    transform: translate(-50%, -100%);
+    margin-top: -8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.tooltip-doble-linea::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #1a1a1a;
+}
+
+.tooltip-doble-linea .semana-doble-linea {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.tooltip-doble-linea .fila-doble-linea {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.tooltip-doble-linea .etiqueta-doble-linea {
+    color: #aaa;
+}
+
+.tooltip-doble-linea .valor-doble-linea {
+    font-weight: 700;
+}
+
+/* ===========================================================================
+   MODO CELULAR (max-width: 768px) — mismo punto de quiebre que el resto
+   del proyecto (ver el comentario grande en styles.css)
+   =========================================================================== */
+@media (max-width: 768px) {
+    .tablero-grafico-doble-linea {
+        flex: none;
+        min-height: 0;
+    }
+
+    .tarjeta-kpi-doble-linea {
+        flex: none;
+        min-height: 0;
+        flex-wrap: wrap;
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .encabezado-kpi-doble-linea {
+        width: auto;
+        min-width: auto;
+    }
+
+    .area-grafico-doble-linea {
+        order: 3;
+        width: 100%;
+        flex: 1 1 100%;
+        height: 110px;
+        min-height: 110px;
+    }
+
+    .valor-kpi-doble-linea {
+        font-size: 24px;
+        width: auto;
+        min-width: 80px;
+    }
+}

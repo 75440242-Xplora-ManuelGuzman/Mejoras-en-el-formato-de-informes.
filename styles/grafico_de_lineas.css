@@ -161,6 +161,29 @@
             r: 6; /* Tamaño aumentado en el hover para que destaquen al interactuar */
         }
 
+        /* ===========================================================
+           ANIMACIÓN DE "DIBUJADO" DE LA LÍNEA (a pedido)
+           Misma técnica que usa .linea-doble-resultado en
+           grafico_doble_lineas.css: la línea se dibuja progresivamente
+           de izquierda a derecha en vez de aparecer de golpe. Como el
+           <path> se recrea de cero cada vez que se llama a
+           renderLineaCumplimiento() (togglear el botón, cambiar los
+           filtros de semana, etc.), la animación se vuelve a disparar
+           sola cada vez — no hace falta hacer nada especial en el JS
+           más allá de ponerle esta clase al <path>.
+           =========================================================== */
+        .linea-cumplimiento-resultado {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dibujarLineaCumplimiento 1.2s ease-out forwards;
+        }
+
+        @keyframes dibujarLineaCumplimiento {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
         /* ===========================================================================
            MODO CELULAR (max-width: 768px) — mismo punto de quiebre que styles.css
            ===========================================================================

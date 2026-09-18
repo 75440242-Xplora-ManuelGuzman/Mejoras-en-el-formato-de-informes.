@@ -200,13 +200,23 @@ main {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   padding: 1rem 1.2rem;
 
-  /* --- Para que .carousel (ver Carousel.css) pueda estirarse y ocupar
-         el alto disponible en vez de tener una altura fija en píxeles --- */
+  /* --- CAMBIO IMPORTANTE ---
+     Antes esto era "flex: 1 1 auto", es decir, esta sección se ESTIRABA
+     para ocupar todo el alto sobrante de .right-panel. Eso tenía sentido
+     cuando el carrusel de evidencias también crecía para llenar ese
+     espacio — pero desde que el carrusel pasó a tener una altura FIJA
+     y compacta (130px, ver Carousel.css), esta sección se seguía
+     estirando igual, dejando un hueco en blanco enorme debajo del
+     carrusel y encima de "Feedback de Actividades".
+
+     Ahora mide justo lo que su contenido necesita (encabezado +
+     carrusel de 130px + paddings), y el espacio que antes quedaba en
+     blanco se lo lleva .feedback-wrapper (ver más abajo), que es
+     donde realmente hace falta más espacio. */
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
+  flex: 0 0 auto;
+  overflow: hidden; /* red de seguridad, sin riesgo de recortar tooltips (esta sección no tiene) */
 }
 
 .evidence-header {
@@ -228,6 +238,29 @@ main {
 .evidence-filters {
   font-size: 11px;
   color: #80868B;
+}
+
+/* ===========================================================
+   FEEDBACK — envoltorio que ahora recibe el espacio sobrante del
+   panel derecho (antes se lo quedaba .evidence-section sin usarlo,
+   dejando el hueco en blanco entre el carrusel y "Feedback de
+   Actividades" — ver el comentario grande en .evidence-section).
+   =========================================================== */
+.feedback-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto; /* se estira para ocupar TODO el alto sobrante */
+  min-height: 0;  /* para que pueda encogerse si hiciera falta, en vez de desbordar */
+}
+
+/* La tarjeta de feedback (definida en feedback.css) llena por completo
+   este envoltorio, para que el espacio extra se use de verdad — no se
+   queda pegada arriba con un hueco debajo. */
+.feedback-wrapper .feedback-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /*

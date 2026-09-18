@@ -1,0 +1,229 @@
+.feedback-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            /* display:flex / flex-direction:column ya se define desde
+               styles.css (.feedback-wrapper .feedback-card), para que
+               esta tarjeta pueda estirarse y usar el espacio sobrante
+               del panel derecho. Acá solo definimos que header y dots
+               midan lo justo, y el cuerpo (feedback-body) sea el que
+               se estire — ver esa regla más abajo. */
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Mantiene el título a la izquierda y botones a la derecha */
+            margin-bottom: 12px;
+            gap: 12px;
+            flex-shrink: 0; /* nunca se achica, aunque el body de abajo crezca */
+        }
+
+        .feedback-title-wrapper {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .feedback-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .feedback-nav {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0; /* Evita que los botones se encojan */
+        }
+
+        .feedback-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1.5px solid #e0e0e0;
+            background: #ffffff;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            padding: 0;
+        }
+
+        .feedback-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .feedback-btn:hover {
+            background: #1e5c3a;
+            color: #ffffff;
+            border-color: #1e5c3a;
+            transform: scale(1.05);
+        }
+
+        .feedback-btn:active {
+            transform: scale(0.95);
+        }
+
+        .feedback-body {
+            position: relative;
+            overflow: hidden;
+            min-height: 80px;
+
+            /* --- Usa el espacio extra sin deformar nada ---
+               Antes esto solo tenía un alto mínimo (80px) y quedaba
+               pegado arriba si sobraba espacio. Ahora crece para llenar
+               lo que .feedback-card le deje disponible, y centra el
+               contenido verticalmente en ese espacio extra — el ícono
+               y el texto NO se agrandan ni se deforman, simplemente
+               quedan mejor "respirados" en vez de apretados arriba. */
+            flex: 1 1 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .feedback-track {
+            display: flex;
+            width: 100%; /* para que ocupe todo el ancho dentro del flex del body */
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+        .feedback-slide {
+            min-width: 100%;
+            padding: 0 2px;
+            box-sizing: border-box;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .feedback-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .feedback-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: #ffffff;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .feedback-icon.positivo { background: #1e5c3a; }
+        .feedback-icon.negativo { background: #dc2626; }
+        .feedback-icon.sugerencia { background: #eab308; }
+        .feedback-icon.info { background: #2563eb; }
+
+        .feedback-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .feedback-text {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #2a2a2a;
+            margin: 0 0 6px 0;
+            font-weight: 500;
+        }
+
+        .feedback-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 11px;
+            color: #7a7a7a;
+        }
+
+        .feedback-author {
+            font-weight: 700;
+            color: #1e5c3a;
+        }
+
+        .feedback-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .feedback-tag.positivo { background: #e8f5ee; color: #1e5c3a; }
+        .feedback-tag.negativo { background: #fde8e8; color: #dc2626; }
+        .feedback-tag.sugerencia { background: #fef3c7; color: #92400e; }
+        .feedback-tag.info { background: #dbeafe; color: #1e40af; }
+
+        .feedback-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+            flex-shrink: 0; /* nunca se achica, igual que el header */
+        }
+
+        .feedback-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #d4d4d4;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.25s ease;
+        }
+
+        .feedback-dot:hover {
+            background: #1e5c3a;
+            transform: scale(1.2);
+        }
+
+        .feedback-dot.active {
+            background: #1e5c3a;
+            width: 18px;
+            border-radius: 4px;
+        }
+
+        /* ===========================================================================
+           MODO CELULAR (max-width: 768px) — mismo punto de quiebre que el
+           resto del proyecto (ver el comentario grande en styles.css).
+           ===========================================================================
+           OJO: antes este archivo usaba 720px y 480px, dos puntos de
+           quiebre propios que no coincidían con el resto del proyecto
+           (768px en todos los demás CSS) — eso podía causar
+           comportamientos inconsistentes justo en anchos intermedios
+           (entre 480 y 768px). El bloque de 480px además era redundante:
+           "flex-direction: row" y "align-self: flex-start" ya eran los
+           valores por defecto de .feedback-slide, así que no hacían
+           nada — se eliminaron. */
+        @media (max-width: 768px) {
+            .feedback-card { padding: 14px 16px; }
+            .feedback-title { font-size: 13px; }
+            .feedback-btn { width: 26px; height: 26px; }
+            .feedback-btn svg { width: 12px; height: 12px; }
+            .feedback-icon { width: 32px; height: 32px; }
+            .feedback-icon svg { width: 16px; height: 16px; }
+            .feedback-text { font-size: 12px; }
+            .feedback-meta { font-size: 10px; gap: 6px; }
+        }

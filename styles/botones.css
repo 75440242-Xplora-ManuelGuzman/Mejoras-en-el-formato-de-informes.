@@ -162,6 +162,31 @@
     background-color: #F1F3F4; /* Fondo gris claro al pasar el cursor */
 }
 
+/* ===========================================================
+   ESTILOS PARA DROPDOWN CON CHECKBOXES
+   =========================================================== */
+.dropdown-menu--checkboxes .dropdown-item {
+    padding: 0; /* Quitamos el padding del <li> para pasárselo al <label> y ampliar el área de clic */
+}
+
+.dropdown-menu--checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.dropdown-menu--checkboxes input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: #0A703D; /* Color verde institucional Primor para el check */
+    width: 14px;
+    height: 14px;
+    margin: 0;
+}
+
 /* ===========================================================================
    MODO CELULAR (max-width: 768px) — mismo punto de quiebre que styles.css
    ===========================================================================
